@@ -1,0 +1,104 @@
+.loginContainer{
+    box-shadow: 1px 1px 3px 1px black;
+    border-radius: 15px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 1em 3em;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+}
+
+.emailElement{
+    padding: 12px 16px;
+    font-size: 16px;
+}
+.passwordElement{
+    padding: 12px 16px;
+    font-size: 16px;
+}
+.buttonElement{
+    padding: 12px 16px;
+    font-size: 16px;
+    border: none;
+    width: 100%;
+    border-radius: 15px;
+    cursor: pointer;
+    background-color: rgba(34, 141, 217, 0.782);
+    
+    margin-top: 2em;
+    transition:
+    background-color 0.6s ease,
+    transform 0.3s ease,
+    box-shadow 0.6s ease;
+}
+.buttonElement:hover{
+    
+    background-color: rgb(104, 192, 255);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgb(104, 192, 255);
+
+}
+
+
+
+
+.input-group {
+            position: relative; 
+            width: 100%;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .floating-input {
+            width: 100%;
+            padding: 18px 10px 6px 10px; /* Crucial: More top padding than bottom padding */
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            line-height: 1.5; /* Ensure text is centered visually */
+            background-color: #fff;
+            transition: border-color 0.3s ease;
+        }
+
+        .floating-label {
+            position: absolute; /* Positioned on top of the input */
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%); /* Vertically center the label */
+            color: #6b7280; /* Gray color for placeholder state */
+            pointer-events: none; /* Allows clicks to go through to the input */
+            transition: all 0.3s ease, background-color 0.3s;
+            font-size: 1rem;
+        }
+
+        /* ---------------------------------------------------------------------- */
+        /* --- THE MAGIC CSS RULES --- */
+        /* ---------------------------------------------------------------------- */
+
+        /* 1. When the input is NOT showing its placeholder (i.e., when it has content OR is focused) */
+        .floating-input:not(:placeholder-shown) + .floating-label,
+        .floating-input:focus + .floating-label {
+            top: 0; /* Move the label to the very top */
+            font-size: 0.75rem; /* Make the label smaller */
+            color: #1d4ed8; /* Change the label color (e.g., to blue) */
+            padding: 0 5px;
+            background-color: #fff; /* White background to cover the line below it */
+            transform: translateY(-50%); /* Adjust to sit exactly above the border line */
+        }
+
+        /* 2. Style the input specifically when it's focused */
+        .floating-input:focus {
+            border-color: #1d4ed8; /* Change input border color to match label */
+            outline: none; /* Remove default browser outline */
+            box-shadow: 0 0 0 1px #1d4ed8;
+        }
