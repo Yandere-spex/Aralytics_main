@@ -1,6 +1,6 @@
 import './InputComponent.css'
 
-export default function InputComponent({id,type, placeholder, width}){
+export default function InputComponent({id,type, placeholder, width, style}){
     return(
         <div className="input-group">
                     <input 
@@ -10,6 +10,7 @@ export default function InputComponent({id,type, placeholder, width}){
                         placeholder={''} 
                         autocomplete="off"
                         width={width}
+                        style={style}
                         />
                     <label for="nameInput" className="floating-label">{placeholder}</label>
         </div>
