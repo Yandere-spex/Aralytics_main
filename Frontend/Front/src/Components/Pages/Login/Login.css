@@ -1,0 +1,49 @@
+.main-wrapper{
+    width: 100vw;
+
+}
+.loginContainer {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: rgba(62, 102, 110);
+
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.button {
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button:disabled {
+    background-color: #ccc;
+}
+
+.error {
+    color: red;
+    font-size: 0.875rem;
+}
+
+.logo{
+    max-width: 80%;
+}
+
+.logotext{
+    color: rgba(185, 168, 112);
+    font-weight: 1000;
+    text-spacing-trim: space-all;
+}
+.logoDes{
+    color: #effeff;
+}
