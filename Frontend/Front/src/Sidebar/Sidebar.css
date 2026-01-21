@@ -1,2 +1,24 @@
 .parent-sidebar{
+    background-color:#1C4D8D;
+    gap: 1em 2em;
+}
+
+.sidebarLogo{
+    max-width: 200px;
+    max-height: 200px;
+}
+.navBtn{
+    border: none;
+    background-color: transparent;
+    max-width: 100%;
+    width: 100%;
+    color: #FFFFFF;
+    font-size: 20px;
+    transition: color 300ms ;
+}
+.navBtn:hover{
+    background-color: #BDE8F5;
+}
+.logoutBtn{
+    margin-top: auto;
 }
