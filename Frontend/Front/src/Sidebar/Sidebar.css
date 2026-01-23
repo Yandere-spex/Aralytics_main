@@ -13,8 +13,11 @@
     max-width: 100%;
     width: 100%;
     color: #FFFFFF;
+    padding: 12px 5px;
     font-size: 20px;
-    transition: color 300ms ;
+    transition-property: color;
+    transition-duration: 3000ms;
+    transition-delay: 3000ms;
 }
 .navBtn:hover{
     background-color: #BDE8F5;

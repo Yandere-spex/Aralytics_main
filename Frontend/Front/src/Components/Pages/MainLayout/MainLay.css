@@ -24,17 +24,11 @@
 }
 
 
-.div2 { grid-area: 2 / 2 / 5 / 4; }
+
 .div3 { grid-area: 1 / 2 / 2 / 4; }
 
 
-.try{
-    width: 100%;
-    height: 100%;
-    background-color: aquamarine;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    justify-content: flex-start;
-    align-items: center;
+.div2 { grid-area: 2 / 2 / 5 / 4;
+
+
 }
