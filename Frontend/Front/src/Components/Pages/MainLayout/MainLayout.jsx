@@ -5,16 +5,15 @@ import Read from '../../../dynamicContent/Read/Read.jsx';
 import Recommendation from '../../../dynamicContent/Recommendation/Recommendation.jsx';
 import { useState } from 'react';
 import MenuButton from '../../MenuButton/MenuButton.jsx';
+import Favourite from '../../../dynamicContent/Favourite/Favourite.jsx';
 
 export default function MainLayout(){
 
     const [active, setActive] = useState('');
 
     const handleDataFromSidebar = (data) =>{
-
         console.log(`MainLayout: Received data: ${data}`);
         setActive(data)
-
     }
 
     const conditionalRender = () => {
@@ -23,10 +22,13 @@ export default function MainLayout(){
             return <Home />;
 
         case 'Read':
-            return <Read />;
+            return <Read menuOption={activeMenu}/>;
 
         case 'Recommendation':
             return <Recommendation />;
+
+        case 'Favourite':
+            return <Favourite />;
 
         case 'Logout':
             return <div>Logged out!</div>;
@@ -34,7 +36,16 @@ export default function MainLayout(){
             return <Home/>;
     }
 };
+
+    const [activeMenu, setActiveMenu] = useState('');
+
+    const handleDataFromMenu = (data) =>{
+        console.log(`MainLayout: Received data: ${data}`);
+        setActiveMenu(data)
+    }
+
     
+
 
     return(
         <div className="parent-grid">
@@ -44,7 +55,7 @@ export default function MainLayout(){
                 {conditionalRender()}
             </div>
 
-            {active === 'Read' && <MenuButton className={'div3'} />}
+            {active === 'Read' && <MenuButton className={'div3'} data={handleDataFromMenu} />}
 
         </div>
     )

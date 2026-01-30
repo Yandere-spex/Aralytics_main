@@ -27,6 +27,10 @@ export default function Sidebar({ className, data }) {
                 Recommendation <i className="fa-regular fa-lightbulb"></i>
             </button>
 
+            <button className='navBtn' onClick={handleClicked} id='Favourite'>
+                Favourite <i class="fa-regular fa-heart"></i>
+            </button>
+
             <button className='navBtn logoutBtn' onClick={handleClicked} id='Logout'>
                 Log out <i className="fa-solid fa-door-open"></i>
             </button>
