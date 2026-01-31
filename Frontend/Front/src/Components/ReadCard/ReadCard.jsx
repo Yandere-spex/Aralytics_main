@@ -1,7 +1,5 @@
 import './ReadCard.css';
-import { useState } from 'react';
-
-export default function ReadCard({cover, Title, onClick}){
+export default function ReadCard({cover, title, onClick}){
 
 
     return(
@@ -9,7 +7,7 @@ export default function ReadCard({cover, Title, onClick}){
             <img className='coverReadCard' src={cover}/>
             
             <div> 
-                <h4>{Title}</h4>
+                <h4>{title}</h4>
 
                 <div className='forDifficultAndHeart'> 
                     <span className='textMode'> Difficulty Easy</span>

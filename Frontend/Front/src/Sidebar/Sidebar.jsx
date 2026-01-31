@@ -28,7 +28,7 @@ export default function Sidebar({ className, data }) {
             </button>
 
             <button className='navBtn' onClick={handleClicked} id='Favourite'>
-                Favourite <i class="fa-regular fa-heart"></i>
+                Favourite <i className="fa-regular fa-heart"></i>
             </button>
 
             <button className='navBtn logoutBtn' onClick={handleClicked} id='Logout'>
