@@ -1,0 +1,97 @@
+/* BLUE VARIANT (Default) */
+.btnFillLeft {
+    padding: 12px 12px;
+    font-size: 16px;
+    font-weight: 500;
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 15px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 0.4s ease;
+}
+
+.btnFillLeft::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #667eea;
+    transition: width 0.4s ease;
+    z-index: -1;
+}
+
+.btnFillLeft:hover {
+    color: white;
+}
+
+.btnFillLeft:hover::before {
+    width: 100%;
+}
+
+.btnFillLeft:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnFillLeft:disabled:hover {
+    color: #667eea;
+}
+
+.btnFillLeft:disabled:hover::before {
+    width: 0;
+}
+
+/* RED VARIANT */
+.btnFillLeftRed {
+    padding: 12px 12px;
+    font-size: 16px;
+    font-weight: 500;
+    background: transparent;
+    color: #ef4444;  /* Red color */
+    border: 2px solid #ef4444;  /* Red border */
+    border-radius: 15px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 0.4s ease;
+}
+
+.btnFillLeftRed::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #ef4444;  /* Red fill */
+    transition: width 0.4s ease;
+    z-index: -1;
+}
+
+.btnFillLeftRed:hover {
+    color: white;
+}
+
+.btnFillLeftRed:hover::before {
+    width: 100%;
+}
+
+.btnFillLeftRed:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnFillLeftRed:disabled:hover {
+    color: #ef4444;
+}
+
+.btnFillLeftRed:disabled:hover::before {
+    width: 0;
+}

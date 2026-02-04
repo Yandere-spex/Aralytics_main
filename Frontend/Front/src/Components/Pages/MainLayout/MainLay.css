@@ -10,6 +10,7 @@
     grid-row-gap: 0px;
     align-items: stretch; 
     justify-items: stretch; 
+    min-width: 100vh;
 }
 
 
