@@ -1,34 +1,51 @@
 import './CardGrid.css';
 import Button from '../../../Components/Button/Button';
 import TimerComponent from '../../../Components/Timer/Timer';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+
 
 export default function CardGrid({ selectedCard }) {
 
+    const timerRef = useRef();
+    const [currentTime, setCurrentTime] = useState(0);
+    const [seconds, setSeconds] = useState(0);
+
     const [start, setStart] = useState(false);
-    const [stop, setStop] = useState(false);
-    const [reset, setReset] = useState(false);
+
 
     const handleStart = () => {
-        setStart(true);
-        setTimeout(() => setStart(false), 0); // Reset prop after triggering
-    };
-
-    const handleStop = () => {
-        setStop(true);
-        setTimeout(() => setStop(false), 0);
-    };
-
-    const handleReset = () => {
-        setReset(true);
-        setTimeout(() => setReset(false), 0);
+        if(start === false){
+            setStart(true);
+            timerRef.current?.start();
+        }else{
+            timerRef.current?.stop();
+            wordsPerMinute();
+        }
     };
 
     const handleTimeUpdate = (time) => {
-    console.log(`Elapsed time: ${time} ms`);
-    }
+        console.log('Time updated:', time);
+        setCurrentTime(time);
 
- 
+
+    };
+    const handleStop = () => {
+        timerRef.current?.stop();
+    };
+
+    const handleReset = () => {
+        timerRef.current?.reset();
+    };
+
+    const wordsPerMinute = () => {
+        const totalSeconds = Math.floor(currentTime / 1000);
+        setSeconds(totalSeconds); // This updates state for later use
+        
+        // Use totalSeconds directly, NOT seconds state
+        const reading_speed_wpm = (120 / totalSeconds) * 60;
+        
+        alert(`The result is ${reading_speed_wpm} WPM. Total seconds: ${totalSeconds}, milliseconds: ${currentTime}`);
+    }
 
 
     return (
@@ -57,20 +74,25 @@ export default function CardGrid({ selectedCard }) {
             </div>
 
 
-                <TimerComponent
-                autoStart={false}
-                showControls={false}
-                onTimeUpdate={handleTimeUpdate}
-                style={{ color: 'red', fontWeight: 'bold' }}
+            <div className='readingTimerBtn'>
 
 
-                />
-            
+                        <TimerComponent 
+                            ref={timerRef}
+                            showControls={false}
+                            onTimeUpdate={handleTimeUpdate}
+                        />
 
-                <Button type='button' width='250px' onClick={handleStart} style= {start}>
-                    {start === false ? 'Start' : 'Done'}
-                </Button>
+                        {/* <button onClick={handleStart}>Start</button> */}
+                        <button onClick={handleStop}>Stop</button>
+                        <button onClick={handleReset}>Reset</button>
 
+                    <Button width='250px' type='button' style={start} onClick={handleStart}>
+                        {start === false ?  'Start'  : 'Done'}    
+                    </Button>
+
+
+            </div>
 
         </div>
     );

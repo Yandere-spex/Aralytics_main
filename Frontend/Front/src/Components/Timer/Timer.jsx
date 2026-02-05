@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 
-const TimerComponent = ({
+const TimerComponent = forwardRef(({
     autoStart = false,
     initialTime = 0,
     onTimeUpdate,
@@ -8,7 +8,7 @@ const TimerComponent = ({
     format,
     style = {},
     interval = 1
-    }) => {
+}, ref) => {  // ← Added 'ref' as second parameter
     const [elapsedTime, setElapsedTime] = useState(initialTime);
     const [isRunning, setIsRunning] = useState(false);
     const startTimeRef = useRef(null);
@@ -24,20 +24,20 @@ const TimerComponent = ({
 
     const startTimer = () => {
         if (!isRunning) {
-        setIsRunning(true);
-        startTimeRef.current = Date.now() - elapsedTime;
-        intervalRef.current = setInterval(() => {
-            const newTime = Date.now() - startTimeRef.current;
-            setElapsedTime(newTime);
-            if (onTimeUpdate) onTimeUpdate(newTime);
-        }, interval);
+            setIsRunning(true);
+            startTimeRef.current = Date.now() - elapsedTime;
+            intervalRef.current = setInterval(() => {
+                const newTime = Date.now() - startTimeRef.current;
+                setElapsedTime(newTime);
+                if (onTimeUpdate) onTimeUpdate(newTime);
+            }, interval);
         }
     };
 
     const stopTimer = () => {
         if (isRunning) {
-        setIsRunning(false);
-        clearInterval(intervalRef.current);
+            setIsRunning(false);
+            clearInterval(intervalRef.current);
         }
     };
 
@@ -45,12 +45,22 @@ const TimerComponent = ({
         setIsRunning(false);
         clearInterval(intervalRef.current);
         setElapsedTime(initialTime);
+        if (onTimeUpdate) onTimeUpdate(initialTime);
     };
+
+    // ⭐ THIS IS THE KEY ADDITION - Expose functions to parent
+    useImperativeHandle(ref, () => ({
+        start: startTimer,
+        stop: stopTimer,
+        reset: resetTimer,
+        getElapsedTime: () => elapsedTime,
+        isRunning: () => isRunning
+    }));
 
     // Auto-start if enabled
     useEffect(() => {
         if (autoStart) {
-        startTimer();
+            startTimer();
         }
     }, [autoStart]);
 
@@ -77,6 +87,8 @@ const TimerComponent = ({
             )}
         </div>
     );
-};
+});
+
+TimerComponent.displayName = 'TimerComponent';
 
 export default TimerComponent;
