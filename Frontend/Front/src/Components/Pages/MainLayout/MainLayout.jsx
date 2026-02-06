@@ -12,7 +12,6 @@ export default function MainLayout(){
     const [active, setActive] = useState('');
 
     const handleDataFromSidebar = (data) =>{
-        console.log(`MainLayout: Received data: ${data}`);
         setActive(data)
     }
 

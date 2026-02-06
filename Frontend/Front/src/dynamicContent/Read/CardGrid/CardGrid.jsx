@@ -1,19 +1,52 @@
 import './CardGrid.css';
 import Button from '../../../Components/Button/Button';
 import TimerComponent from '../../../Components/Timer/Timer';
+import QuizWrapper from '../../../Components/QuizWapper/QuizWrapper.jsx';
 import { useState, useRef } from 'react';
 
-import Quiz from '../../../Components/Quiz/Quiz';
 
 
 export default function CardGrid({ selectedCard }) {
+
+
+    const caterpillarQuiz = {
+        information: {
+            title: "The Very Hungry Caterpillar",
+            level: "Easy",
+            wordCount: 120,
+        },
+        comprehensionQuestions: [
+            {
+                question: "What did the caterpillar eat on Monday?",
+                options: ["One apple", "Two pears", "Three plums"],
+                correctAnswer: "One apple"
+            },
+            {
+                question: "Why did the caterpillar feel sick?",
+                options: ["He ate too much food", "He was sleepy", "He didn't eat anything"],
+                correctAnswer: "He ate too much food"
+            },
+            {
+                question: "What did the caterpillar become in the end?",
+                options: ["A worm", "A butterfly", "A bee"],
+                correctAnswer: "A butterfly"
+            }
+        ]
+    };
+
+
+
+
+
+
+
 
     const timerRef = useRef();
     const [currentTime, setCurrentTime] = useState(0);
     const [seconds, setSeconds] = useState(0);
 
     const [start, setStart] = useState(false);
-    const [takeQUiz, setTakeQuiz] = useState(false)
+    const [takeQUiz, setTakeQuiz] = useState(true)
 
 
     const handleStart = () => {
@@ -94,18 +127,11 @@ export default function CardGrid({ selectedCard }) {
 
             </div> 
 
-        </div> : <div>
-            <Quiz
-                question="What did the caterpillar eat on Monday?"
-                options={[
-                    "One apple",
-                    "Two pears",
-                    "Three plums",
-                ]}
-                correctAnswer="One apple"
-                onAnswer={handleAnswer}
-            />
-        </div>}
+        </div> : 
+        
+        <QuizWrapper quizPackage={caterpillarQuiz}/>
+        
+        }
         </>
 
     /*

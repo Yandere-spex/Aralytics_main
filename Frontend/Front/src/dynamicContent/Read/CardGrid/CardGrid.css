@@ -68,3 +68,10 @@
     gap: 0px 3em;
 }
 
+
+.quizContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
