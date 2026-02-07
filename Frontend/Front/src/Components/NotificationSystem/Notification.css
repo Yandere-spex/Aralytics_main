@@ -1,0 +1,148 @@
+/* Container for all notifications */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+/* Individual notification */
+.notification {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 400px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: white;
+    pointer-events: all;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* Slide in animation */
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Icon styling */
+.notification-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Message */
+.notification-message {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+}
+
+/* Close button */
+.notification-close {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.notification-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000;
+}
+
+/* Success notification */
+.notification-success {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+}
+
+.notification-success .notification-icon {
+    background: #22c55e;
+    color: white;
+}
+
+/* Error notification */
+.notification-error {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+}
+
+.notification-error .notification-icon {
+    background: #ef4444;
+    color: white;
+}
+
+/* Warning notification */
+.notification-warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+}
+
+.notification-warning .notification-icon {
+    background: #f59e0b;
+    color: white;
+}
+
+/* Info notification */
+.notification-info {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+}
+
+.notification-info .notification-icon {
+    background: #3b82f6;
+    color: white;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+    .notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+    
+    .notification {
+        min-width: auto;
+        max-width: none;
+    }
+}

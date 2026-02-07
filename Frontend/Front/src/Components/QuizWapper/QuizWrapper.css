@@ -76,26 +76,34 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    }
+}
 
 .nextButton:hover {
     background-color: #357abd;
-    }
+}
 
 .nextButton:disabled {
-
     width: 100%;
     background-color: #cccccc;
     cursor: not-allowed;
-    }
-
-
-
-
-
-
+}
 
 
     .option{
         background-color: #702222;
-    }
+}
+
+.evaluationContainer{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    grid-template-rows: repeat(4,1fr);
+}
+
+.readingSummaryElement{
+    grid-area: 1 / 1 / 2 / 5;
+
+    text-align: center;
+}
+.th{
+    text-align: center;
+}

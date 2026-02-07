@@ -29,10 +29,50 @@ function QuizWrapper({ quizPackage }) {
         const score = userAnswers.reduce((acc, answer, idx) => 
             answer === correctAnswers[idx] ? acc + 1 : acc, 0
         );
+
+        const totalQuestions = comprehensionQuestions.length;
+        const percentage = Math.round((score / totalQuestions) * 100);
+    
+        let remark = "";
+        let interpretation = "";
+        
+        if (score === totalQuestions) {
+
+            remark = "🌟 Excellent comprehension!";
+            interpretation = "Student clearly understood the story and can move to next level.";
+        } else if (score === totalQuestions - 1) {
+
+            remark = "👍 Good effort!";
+            interpretation = "Student understands most parts but needs more practice with details.";
+        } else if (score === 1) {
+
+            remark = "⚠️ Needs improvement.";
+            interpretation = "Student has partial understanding — assign easier or guided activity.";
+        } else {
+
+            remark = "❌ Try again.";
+            interpretation = "Student didn't comprehend the text — retake test or re-read story.";
+        }
+
         return (
-            <div>
+            <div className='evaluationContainer'>
+                <h1 className='readingSummaryElement'>Reading Comprehension Summary</h1>
+
+                <h3 className='th'>Correct Answers</h3>
+                <h3 className='th'>Score %</h3>
+                <h3 className='th'>Remark</h3>
+                <h3 className='th'>Interpretation</h3>
+
+
+                <h3 className='th'>  {score} / {totalQuestions} </h3>
+                <h3 className='th'>{percentage}%</h3>
+                <h3 className='th'>{remark}</h3>
+                <h3 className='th'>{interpretation}</h3>
+
+
+{/* 
                 <h2>Quiz Complete!</h2>
-                <p>Your Score: {score} / {comprehensionQuestions.length}</p>
+                <p>Your Score: {score} / {comprehensionQuestions.length}</p> */}
             </div>
         );
     }
