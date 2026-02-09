@@ -6,6 +6,7 @@ import Recommendation from '../../../dynamicContent/Recommendation/Recommendatio
 import { useState } from 'react';
 import MenuButton from '../../MenuButton/MenuButton.jsx';
 import Favourite from '../../../dynamicContent/Favourite/Favourite.jsx';
+import SelectedCard from '../../../dynamicContent/Read/SelectedCard/SelectedCard.jsx';
 
 export default function MainLayout(){
 
@@ -51,7 +52,8 @@ export default function MainLayout(){
             <Sidebar className={'div1'} data={handleDataFromSidebar}/>
 
             <div className='div2'>
-                {conditionalRender()}
+                {/* {conditionalRender()} */}
+                <SelectedCard/>
             </div>
 
             {active === 'Read' && <MenuButton className={'div3'} data={handleDataFromMenu} />}

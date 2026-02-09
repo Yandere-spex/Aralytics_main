@@ -1,0 +1,77 @@
+.readingGrid{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    grid-template-rows: auto 1fr auto;
+    gap: 2em 10px;
+    justify-items: center; /* Horizontal centering in each cell */
+    align-items: center;
+}
+
+.readingGridTitle{
+    grid-area: 1 / 1 / 2 / 3; 
+    text-align: center;
+}
+
+
+
+
+.readingImgTxt{
+    grid-area: 2 / 1 / 2 / 3; 
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    justify-self: stretch; 
+    align-self: stretch;
+
+}
+.coverReadingChild{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 10px; 
+    max-height: 300px;
+    overflow-y: scroll;
+    font-size: 1.3em;
+    scrollbar-width: none;
+}
+.coverReadingChild::-webkit-scrollbar {
+    display: none; 
+}
+
+.coverReading{
+    width: 50%;
+    height: auto;
+}
+.readingImgTxtChild2{
+    font-size: 1.5em;
+}
+
+
+
+.readingTimerBtn{
+    grid-area: 3 / 1 / 4 / 3; 
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0px 3em;
+}
+
+
+.readingBtnLapse{
+    grid-area: 3 / 1 / 4 / 3; 
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0px 3em;
+}
+
+
+.quizContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
