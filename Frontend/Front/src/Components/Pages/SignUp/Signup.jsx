@@ -1,5 +1,5 @@
-import logo from '../../../../public/logo.jpg';
 import './Signup.css'
+import logo from '../../../../src/assets/imageCover/logo.jpg';
 import InputComponent from '../../InputComponent/InputComponent';
 import { useState } from 'react';
 

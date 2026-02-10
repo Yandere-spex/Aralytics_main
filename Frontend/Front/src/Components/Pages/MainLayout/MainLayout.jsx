@@ -1,12 +1,12 @@
 import './MainLay.css';
+import { useState } from 'react';
 import Sidebar from '../../../Sidebar/Sidebar';
 import Home from '../../../dynamicContent/Home/Home.jsx';
-import Read from '../../../dynamicContent/Read/Read.jsx';
 import Recommendation from '../../../dynamicContent/Recommendation/Recommendation.jsx';
-import { useState } from 'react';
 import MenuButton from '../../MenuButton/MenuButton.jsx';
 import Favourite from '../../../dynamicContent/Favourite/Favourite.jsx';
 import SelectedCard from '../../../dynamicContent/Read/SelectedCard/SelectedCard.jsx';
+import ResultScreen from '../../ResultScreen/ResultScreen.jsx';
 
 export default function MainLayout(){
 
@@ -22,7 +22,7 @@ export default function MainLayout(){
             return <Home />;
 
         case 'Read':
-            return <Read menuOption={activeMenu}/>;
+            return <SelectedCard menuOption={activeMenu}/>;
 
         case 'Recommendation':
             return <Recommendation />;
@@ -52,8 +52,8 @@ export default function MainLayout(){
             <Sidebar className={'div1'} data={handleDataFromSidebar}/>
 
             <div className='div2'>
-                {/* {conditionalRender()} */}
-                <SelectedCard/>
+                {conditionalRender()}
+                {/* <ResultScreen/> */}
             </div>
 
             {active === 'Read' && <MenuButton className={'div3'} data={handleDataFromMenu} />}

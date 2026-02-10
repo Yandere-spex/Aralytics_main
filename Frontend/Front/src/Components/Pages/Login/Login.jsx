@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import InputComponent from '../../InputComponent/InputComponent';
 import './Login.css';
-import logo from '../../../../public/logo.jpg';
+import logo from '../../../assets/imageCover/logo.jpg'
 export default function Login (){
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({});

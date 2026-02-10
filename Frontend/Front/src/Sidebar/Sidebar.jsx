@@ -1,12 +1,10 @@
 import './Sidebar.css';
-import logo from '../../public/logo.jpg';
+import logo from '../../src/assets/imageCover/logo.jpg';
 
 
 export default function Sidebar({ className, data }) {
     function handleClicked(event) {
-        const dataFromEvent = event.currentTarget.id;
-        console.log(`Sidebar: Clicked button id:  ${event.currentTarget.id}` );
-        
+        const dataFromEvent = event.currentTarget.id;        
         data(dataFromEvent); 
     }
 

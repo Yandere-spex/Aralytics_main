@@ -1,6 +1,6 @@
 import './SelectedCard.css'
 import { useState } from 'react';
-import littleRedRiding from '../../../assets/imageCover/Littlle red riding Hood.jpg';
+import littleRedRiding from '../../../assets/imageCover/THe little Red Riding Hood.jpg';
 import coverLittle from '../../../assets/imageCover/The Little princess Cover.webp';
 import coverpillar from '../../../assets/imageCover/The Very hungry caterpillar.webp';
 import ReadCard from '../../../Components/ReadCard/ReadCard.jsx';

@@ -32,6 +32,7 @@
     overflow-y: scroll;
     font-size: 1.3em;
     scrollbar-width: none;
+    font-size: 1.5em;
 }
 .coverReadingChild::-webkit-scrollbar {
     display: none; 
@@ -43,6 +44,7 @@
 }
 .readingImgTxtChild2{
     font-size: 1.5em;
+    opacity: 0;
 }
 
 
@@ -74,4 +76,9 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+
+
+.isNotReadyreadingImgTxtChild2{
+
 }
