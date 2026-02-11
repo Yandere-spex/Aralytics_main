@@ -170,28 +170,13 @@ export default function SelectedCard(){
 
     return(
         <>
-            {/* <div className={selectedCard === null ? 'mainRead' : ''}>
-
-                {selectedCard === null 
-                ? cards.map((card, index) => ( 
-                    <ReadCard
-                        key={card.id || index}  
-                        cover={card.cover}
-                        title={card.title}
-                        onClick={() => handleCardClick(card)} 
-                    />
-                ))
-                : <CardGrid selectedCard={selectedCard}/>
-                }
-            </div> */}
-
                 <div className={selectedCard === null ? 'mainRead' : ''}>
                 {selectedCard === null
-                    ? quizzesCards.map((card, index) => (  // FIXED: Use quizzes instead of cards
+                    ? quizzesCards.map((card, index) => ( 
                         <ReadCard
                             key={card._id || index}  // FIXED: Use _id
-                            cover={card.cover}  // FIXED: Now exists in the object
-                            title={card.information.title}  // FIXED: Access nested title
+                            cover={card.cover}  
+                            title={card.information.title}  
                             onClick={() => handleCardClick(card)}
                         />
                     ))
