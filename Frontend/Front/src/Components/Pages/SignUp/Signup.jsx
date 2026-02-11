@@ -1,66 +1,130 @@
 import './Signup.css'
 import logo from '../../../../src/assets/imageCover/logo.jpg';
 import InputComponent from '../../InputComponent/InputComponent';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 export default function SignUp() {
-    const [formData, setFormData] = useState({ email: '', password: '' });
-        const [errors, setErrors] = useState({});
-        const [loading, setLoading] = useState(false);
-    
-    
-        const handleChange = (e) => {
-            setFormData({ ...formData, [e.target.name]: e.target.value });
-        };
-    
-        const handleSubmit = async (e) => {
-            e.preventDefault();
-            setLoading(true);
-    
-            try {
+    const navigate = useNavigate();
 
-            if (formData.email && formData.password) {
-            } else {
-                setErrors({ general: 'Invalid credentials' });
-            }
-            } catch (err) {
-            setErrors({ general: 'Login failed' });
-            }
-            setLoading(false);
-        };
+    const tryNavigate = () =>{
+        navigate('/login');
+    }
 
+    // Updated formData to match backend requirements
+    const [formData, setFormData] = useState({ 
+        firstName: '',
+        lastName: '',
+        email: '', 
+        password: '',
+        confirmPassword: ''
+    });
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
-    return(
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+        // Clear errors when user starts typing
+        setErrors({ ...errors, [e.target.name]: '' });
+    };
+
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // DEBUG - Check state before submitting
+    console.log('FormData state:', formData);
+    console.log('firstName:', formData.firstName);
+    console.log('lastName:', formData.lastName);
+    
+    setLoading(true);
+    setErrors({});
+    setSuccessMessage('');
+
+    const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
+    };
+
+    console.log('Payload being sent:', payload);
+
+    try {
+        const response = await fetch('http://localhost:5000/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (response.ok) {
+            setSuccessMessage('Registration successful! Redirecting...');
+            localStorage.setItem('token', data.data.token);
+            localStorage.setItem('user', JSON.stringify(data.data.user));
+
+            setFormData({
+                firstName: '',
+                lastName: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+            });
+
+            setTimeout(() => {
+                navigate('/Mainlayout');
+            }, 2000);
+
+        } else {
+            setErrors({ general: data.message || 'Registration failed' });
+        }
+
+    } catch (err) {
+        console.error('Error:', err);
+        setErrors({ general: 'Network error. Please try again.' });
+    }
+
+    setLoading(false);
+};
+    return (
         <>
             <div className='main-wrapper'>
-                        <div className={"loginContainer"}>
-                        <img className='logo' src={logo} alt='Logo'/>
-                        <h2 className='logotext'>Aralytics</h2>
-                        <h3 className='logoDes'>Learning Platform</h3>
-                        <form onSubmit={handleSubmit} className={"form"}>
-
-                            <InputComponent
+                <div className={"loginContainer"}>
+                    <img className='logo' src={logo} alt='Logo'/>
+                    <h2 className='logotext'>Aralytics</h2>
+                    <h3 className='logoDes'>Learning Platform</h3>
+                    
+                    <form onSubmit={handleSubmit} className={"form"}>
+                        {/* First Name */}
+                        <InputComponent
                             type="text"
-                            name="text"
-                            label="text"
+                            name="firstName"
+                            label="First Name"
                             placeholder="Enter your First Name"
-                            value={formData.email}
+                            value={formData.firstName}
                             onChange={handleChange}
-                            error={errors.email}
-                            />
+                            error={errors.firstName}
+                        />
 
-                            <InputComponent
+                        {/* Last Name */}
+                        <InputComponent
                             type="text"
-                            name="text"
-                            label="text"
+                            name="lastName"
+                            label="Last Name"
                             placeholder="Enter your Last Name"
-                            value={formData.email}
+                            value={formData.lastName}
                             onChange={handleChange}
-                            error={errors.email}
-                            />
+                            error={errors.lastName}
+                        />
 
-
-                            <InputComponent
+                        {/* Email */}
+                        <InputComponent
                             type="email"
                             name="email"
                             label="Email"
@@ -68,9 +132,10 @@ export default function SignUp() {
                             value={formData.email}
                             onChange={handleChange}
                             error={errors.email}
-                            />
+                        />
 
-                            <InputComponent
+                        {/* Password */}
+                        <InputComponent
                             type="password"
                             name="password"
                             label="Password"
@@ -78,29 +143,46 @@ export default function SignUp() {
                             value={formData.password}
                             onChange={handleChange}
                             error={errors.password}
-                            />
+                        />
 
-                            <InputComponent
-                            type="text"
-                            name="text"
-                            label="text"
+                        {/* Confirm Password */}
+                        <InputComponent
+                            type="password"
+                            name="confirmPassword"
+                            label="Confirm Password"
                             placeholder="Confirm your Password"
-                            value={formData.email}
+                            value={formData.confirmPassword}
                             onChange={handleChange}
-                            error={errors.email}
-                            />
+                            error={errors.confirmPassword}
+                        />
 
-                            {errors.general && <p className={styles.error}>{errors.general}</p>}
-            
-                            <button type="submit" disabled={loading} className={"button"}>
-                            {loading ? 'Logging in...' : 'Login'}
-                            </button>
-                        </form>
-                        <p><a href="/forgot-password">Forgot Password?</a></p>
-                        <p>Don't have an account? <a href="/signup">Sign up</a></p>
-                        </div>
-                </div>
+                        {/* Error Message */}
+                        {errors.general && (
+                            <p style={{ color: 'red', fontSize: '14px', margin: '10px 0' }}>
+                                {errors.general}
+                            </p>
+                        )}
+
+                        {/* Success Message */}
+                        {successMessage && (
+                            <p style={{ color: 'green', fontSize: '14px', margin: '10px 0' }}>
+                                {successMessage}
+                            </p>
+                        )}
         
+                        {/* Submit Button */}
+                        <button 
+                            type="submit" 
+                            disabled={loading} 
+                            className={"button"}
+                        >
+                            {loading ? 'Creating Account...' : 'Sign Up'}
+                        </button>
+                    </form>
+
+                    <p>Already have an account? <span onClick={tryNavigate}>Login </span></p>
+                </div>
+            </div>
         </>
     )
 }
