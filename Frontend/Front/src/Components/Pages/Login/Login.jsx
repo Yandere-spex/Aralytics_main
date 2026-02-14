@@ -3,7 +3,7 @@ import { useState } from 'react';
 import InputComponent from '../../InputComponent/InputComponent';
 import './Login.css';
 import logo from '../../../assets/imageCover/logo.jpg';
-import { useNavigate } from 'react-router-dom';
+import { replace, useNavigate } from 'react-router-dom';
 
 
 export default function Login (){
@@ -53,7 +53,7 @@ export default function Login (){
                 localStorage.setItem('user', JSON.stringify(data.data.user));
 
                 // Redirect to dashboard
-                navigate('/Mainlayout');
+                    navigate('/Mainlayout', { replace: true })
             } else {
                 // Login failed - show error message
                 setErrors({ general: data.message || 'Invalid credentials' });

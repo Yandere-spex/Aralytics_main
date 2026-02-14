@@ -3,7 +3,8 @@
    =================================== */
 
 .results-screen {
-    max-width: 900px;
+    min-width: 900px;
+    width: 100%;
     margin: 0 auto;
     padding: 40px 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -255,7 +256,7 @@
 }
 
 /* ===================================
-   RESPONSIVE DESIGN
+    RESPONSIVE DESIGN
    =================================== */
 
 @media (max-width: 768px) {
@@ -323,7 +324,7 @@
 }
 
 /* ===================================
-   ANIMATIONS
+    ANIMATIONS
    =================================== */
 
 @keyframes fadeIn {
@@ -362,7 +363,7 @@
 }
 
 /* ===================================
-   PRINT STYLES
+    PRINT STYLES
    =================================== */
 
 @media print {

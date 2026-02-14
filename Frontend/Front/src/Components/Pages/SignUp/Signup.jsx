@@ -4,6 +4,7 @@ import InputComponent from '../../InputComponent/InputComponent';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
+
 export default function SignUp() {
     const navigate = useNavigate();
 
@@ -77,8 +78,8 @@ export default function SignUp() {
                 confirmPassword: ''
             });
 
-            setTimeout(() => {
-                navigate('/Mainlayout');
+            setTimeout(() => {  
+                navigate('/Mainlayout', { replace: true })
             }, 2000);
 
         } else {

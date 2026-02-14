@@ -78,7 +78,7 @@ export default function StoryReader({ quizPackage, onComplete }){
             <div className="readingImgTxt">
                 <div className="coverReadingChild">
                     <img 
-                        src={quizPackage.cover} 
+                        src={quizPackage.cover.url} 
                         alt={quizPackage.information.title}
                         className="coverReading"
                     />

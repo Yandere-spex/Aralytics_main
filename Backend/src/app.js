@@ -54,6 +54,8 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/stories', require('./routes/storyRoutes'));
+app.use('/api/results', require('./routes/resultRoutes'));
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });
