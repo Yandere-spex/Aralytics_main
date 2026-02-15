@@ -25,7 +25,7 @@ exports.getAllStories = asyncHandler(async (req, res) => {
     }
     
     const stories = await Story.find(filter)
-        .select('-comprehensionQuestions') // Don't send questions yet
+        // .select('-comprehensionQuestions') // Don't send questions yet
         .sort({ createdAt: -1 });
     
     res.status(200).json(

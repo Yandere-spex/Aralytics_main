@@ -2,22 +2,54 @@ import './QuizWrapper.css';
 import { useState } from 'react';
 
 function QuizWrapper({ quizPackage, onComplete }) {
-    const { information, comprehensionQuestions } = quizPackage;
+
+    if (!quizPackage) {
+        console.warn('⚠️ quizPackage is null/undefined');
+        return <div className="quiz-loading">Loading quiz...</div>;
+    }
+
+    const { information = {}, comprehensionQuestions = [] } = quizPackage;
     
+    console.log('Questions array:', comprehensionQuestions);
+    console.log('Questions length:', comprehensionQuestions.length);
+
+    if (!Array.isArray(comprehensionQuestions) || comprehensionQuestions.length === 0) {
+        console.error('❌ No questions available');
+        return (
+            <div className="quiz-error">
+                <h2>Quiz Not Available</h2>
+                <p>This story doesn't have quiz questions yet.</p>
+                <p><strong>Story:</strong> {information.title || 'Unknown'}</p>
+                <p><strong>Story ID:</strong> {quizPackage._id || 'Unknown'}</p>
+            </div>
+        );
+    }
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState('');
-    const [userAnswers, setUserAnswers] = useState(new Array(comprehensionQuestions.length).fill(''));
-    const [quizComplete, setQuizComplete] = useState(false);
+    const [userAnswers, setUserAnswers] = useState([]);
+
+    const currentQuestion = comprehensionQuestions[currentIndex];
+    
+    console.log('Current index:', currentIndex);
+    console.log('Current question:', currentQuestion);
+
+    if (!currentQuestion) {
+        console.error('❌ Current question is undefined at index:', currentIndex);
+        return (
+            <div className="quiz-error">
+                <p>Error: Question not found at index {currentIndex}</p>
+                <button onClick={() => setCurrentIndex(0)}>Reset to Start</button>
+            </div>
+        );
+    }
 
     const isAtLastQuestion = currentIndex === comprehensionQuestions.length - 1;
 
-    // ✅ Calculate and send results when quiz completes
     const handleFinishQuiz = () => {
-        // Save last answer
         const finalAnswers = [...userAnswers];
         finalAnswers[currentIndex] = selectedAnswer;
         
-        // Calculate results
         const correctAnswers = comprehensionQuestions.map(q => q.correctAnswer);
         const score = finalAnswers.reduce((acc, answer, idx) => 
             answer === correctAnswers[idx] ? acc + 1 : acc, 0
@@ -42,7 +74,6 @@ function QuizWrapper({ quizPackage, onComplete }) {
             interpretation = "Student didn't comprehend the text — retake test or re-read story.";
         }
 
-        // ✅ Create results object
         const resultsObject = {
             score,
             totalQuestions,
@@ -60,42 +91,46 @@ function QuizWrapper({ quizPackage, onComplete }) {
             completedAt: new Date()
         };
 
-        // ✅ Send to parent via callback
         if (onComplete && typeof onComplete === 'function') {
-            onComplete(resultsObject);  // Parent receives this object
+            onComplete(resultsObject);
         }
     };
 
     const handleNext = () => {
-        // Save current answer
         setUserAnswers(prevAnswers => {
             const newAnswers = [...prevAnswers];
             newAnswers[currentIndex] = selectedAnswer;
             return newAnswers;
         });
 
-        // Check if last question
         if (isAtLastQuestion) {
-            handleFinishQuiz();  // ✅ Calculate and send results
+            handleFinishQuiz();
         } else {
-            setCurrentIndex(currentIndex + 1);
+            setCurrentIndex(prev => prev + 1);
+            setSelectedAnswer('');
         }
+    };
 
-        setSelectedAnswer('');
+    const handlePrevious = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(prev => prev - 1);
+            setSelectedAnswer(userAnswers[currentIndex - 1] || '');
+        }
     };
 
     return (
         <div className='quizWrapperContainer'>
-            <h1>{information.title}</h1>
+            <h1>{information.title || 'Quiz'}</h1>
             
             <div className="questionNumber">
                 Question <span>{currentIndex + 1}</span> of <span>{comprehensionQuestions.length}</span>
             </div>
 
-            <h3 className='question'>{comprehensionQuestions[currentIndex].question}</h3>
+            {/* ✅ Now 100% safe to access */}
+            <h3 className='question'>{currentQuestion.question}</h3>
 
             <div className='optionsContainer'>
-                {comprehensionQuestions[currentIndex].options.map((option, index) => (
+                {(currentQuestion.options || []).map((option, index) => (
                     <button 
                         key={index} 
                         className={`optionButton ${selectedAnswer === option ? 'selected' : ''}`}
@@ -107,8 +142,9 @@ function QuizWrapper({ quizPackage, onComplete }) {
             </div>
             
             <button 
-                onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+                onClick={handlePrevious}
                 disabled={currentIndex === 0}
+                className="prevButton"
             >
                 Previous
             </button>

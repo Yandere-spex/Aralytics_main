@@ -13,16 +13,12 @@ export default function Login (){
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        console.log('handleChange:', e.target.name, e.target.value); // DEBUG
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setErrors({ ...errors, [e.target.name]: '' });
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        console.log('Login FormData:', formData); // DEBUG
-        
+        e.preventDefault();        
         setLoading(true);
         setErrors({});
 

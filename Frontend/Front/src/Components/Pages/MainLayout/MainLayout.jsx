@@ -22,12 +22,12 @@ export default function MainLayout() {
     }, [fetchUserData]); // Runs once when component mounts
 
     // Redirect if no user after loading completes
-    useEffect(() => {
-        if (!loading && !user) {
-            console.log('No user found, redirecting to login...');
-            navigate('/login', { replace: true });
-        }
-    }, [user, loading, navigate]);
+    // useEffect(() => {
+    //     if (!loading && !user) {
+    //         console.log('No user found, redirecting to login...');
+    //         navigate('/login', { replace: true });
+    //     }
+    // }, [user, loading, navigate]);
 
     const handleDataFromSidebar = (data) => {
         setActive(data);
