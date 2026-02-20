@@ -1,6 +1,6 @@
 import './ResultScreen.css';
 
-export default function ResultScreen({ storyInfo, readingMetrics, quizResults, onRetry, onBackToStories }) {
+export default function ResultScreen({ storyInfo, readingMetrics, quizResults, onRetry, onAnotherStory }) {
     return (
         <div className="results-screen">
             <h1>🎉 Assessment Complete!</h1>
@@ -56,7 +56,7 @@ export default function ResultScreen({ storyInfo, readingMetrics, quizResults, o
             {/* Actions */}
             <div className="actions">
                 <button onClick={onRetry}>🔄 Try Again</button>
-                <button onClick={onBackToStories}>📚 Choose Another Story</button>
+                <button onClick={onAnotherStory}>📚 Choose Another Story</button>
             </div>
         </div>
     );

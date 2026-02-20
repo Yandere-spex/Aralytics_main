@@ -1,17 +1,142 @@
-.mainRead{
+:root {
+    --grid-min-column-width: 150px;  
+    --grid-gap: 1em;                
+    --grid-padding-vertical: 10px;  
+    --grid-padding-horizontal: 5px; 
+    --grid-rows: auto;               
+}
+
+.mainRead {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    grid-template-rows: auto auto auto;
-    gap: 10px; 
-    padding: 10px 5px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+    padding: 10px;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {  /* Tablet and below */
+    :root {
+        --grid-min-column-width: 120px;  /* Smaller columns for narrower screens */
+        --grid-gap: 8px;                 /* Slightly tighter gaps */
+        --grid-padding-vertical: 8px;    /* Less vertical padding */
+        --grid-padding-horizontal: 4px;  /* Less horizontal padding */
+        --grid-rows: auto;               /* Keep auto for flexibility */
+    }
+}
+
+@media (max-width: 480px) {  /* Mobile */
+    :root {
+        --grid-min-column-width: 100px;  /* Even smaller for phones */
+        --grid-gap: 5px;                 /* Minimal gaps for space */
+        --grid-padding-vertical: 5px;    /* Tight padding */
+        --grid-padding-horizontal: 3px;  /* Tight padding */
+        --grid-rows: auto;               /* Allow more rows if needed */
+    }
 }
 
 
+/* Simpler version - just fade in all cards at once */
+/* SelectedCard.css */
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Card wrapper animation */
+.card-wrapper {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Stage animations */
+.stage-reading {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.stage-quiz {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.stage-results {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Alternative: Single class for all stages */
+.stage-container {
+    animation: fadeIn 0.6s ease-out;
+}
 
 
+/* SelectedCard.css - Complete */
+
+/* Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Card animations */
+.card-wrapper {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Stage animations */
+.fade-in-stage {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.stage-reading {
+    animation: slideInRight 0.6s ease-out;
+}
+
+.stage-quiz {
+    animation: scaleUp 0.5s ease-out;
+}
+
+.stage-results {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Layout */
 
 
-
-
-
-
+.loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+}

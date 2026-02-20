@@ -31,9 +31,6 @@ function QuizWrapper({ quizPackage, onComplete }) {
 
     const currentQuestion = comprehensionQuestions[currentIndex];
     
-    console.log('Current index:', currentIndex);
-    console.log('Current question:', currentQuestion);
-
     if (!currentQuestion) {
         console.error('❌ Current question is undefined at index:', currentIndex);
         return (
@@ -126,7 +123,6 @@ function QuizWrapper({ quizPackage, onComplete }) {
                 Question <span>{currentIndex + 1}</span> of <span>{comprehensionQuestions.length}</span>
             </div>
 
-            {/* ✅ Now 100% safe to access */}
             <h3 className='question'>{currentQuestion.question}</h3>
 
             <div className='optionsContainer'>
@@ -144,7 +140,7 @@ function QuizWrapper({ quizPackage, onComplete }) {
             <button 
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
-                className="prevButton"
+                className="prevButton nextButton"
             >
                 Previous
             </button>

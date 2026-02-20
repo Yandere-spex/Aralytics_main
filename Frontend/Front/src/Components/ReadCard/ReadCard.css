@@ -1,4 +1,4 @@
-.readCardContainer{
+/* .readCardContainer{
     width: 150px;
     height: 200px;
     display: flex;
@@ -29,4 +29,57 @@
 
     padding: 5px 12px;
     border-radius: 15px;
+} */
+
+ .readCardContainer {
+    width: 170px;
+    min-height: 230px; /* Changed from fixed height to min-height to allow growth for long titles */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Adjusted to start alignment for better control */
+    align-items: center;
+    gap: 0.5em;
+    padding: 10px; /* Added padding for better spacing and to prevent content from touching edges */
+    box-sizing: border-box; /* Ensures padding is included in width/height calculations */
 }
+
+.coverReadCard {
+    width: 100%;
+    height: 100px; /* Set to fixed height instead of percentage for consistency */
+    object-fit: cover; /* Ensures image scales properly without distortion */
+}
+
+.readCardContainer h4 {
+    font-size: 14px; /* Slightly reduced for better fit */
+    margin: 0; /* Remove default margins */
+    text-align: center; /* Center the title */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Prevents wrapping; use 'normal' if wrapping is preferred */
+    width: 100%; /* Ensures ellipsis applies across full width */
+}
+
+.textMode {
+    font-size: 12px; /* Reduced slightly for consistency */
+}
+
+.forDifficultAndHeart {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly; /* Changed to space-between for better alignment of difficulty and heart */
+    align-items: center;
+    width: 100%; /* Ensures full width usage */
+}
+
+.readBtn {
+    background-color: #1C4D8D;
+    color: #BDE8F5;
+    align-self: center;
+    padding: 5px 12px;
+    border-radius: 15px;
+    border: none; /* Added for cleaner look */
+    cursor: pointer; /* Added for interactivity */
+    font-size: 12px; /* Consistent sizing */
+    width: 100%; /* Makes button full width for consistency */
+    box-sizing: border-box;
+} 

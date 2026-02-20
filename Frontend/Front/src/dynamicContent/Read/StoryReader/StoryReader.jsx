@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import TimerComponent from '../../../Components/Timer/Timer';
-import Button from '../../../Components/Button/Button'
+import Button from '../../../Components/Button/Button';
+import './StoryReader.css';
 
 
 export default function StoryReader({ quizPackage, onComplete }){
