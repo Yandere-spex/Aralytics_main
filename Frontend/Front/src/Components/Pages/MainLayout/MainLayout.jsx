@@ -8,6 +8,7 @@ import Recommendation from '../../../dynamicContent/Recommendation/Recommendatio
 import MenuButton from '../../MenuButton/MenuButton.jsx';
 import Favourite from '../../../dynamicContent/Favourite/Favourite.jsx';
 import SelectedCard from '../../../dynamicContent/Read/SelectedCard/SelectedCard.jsx';
+import AlphabetGrid from '../../../dynamicContent/AlphabetGrid/AlphabetGrid.jsx';
 
 export default function MainLayout() {
     const { user, loading, error, fetchUserData } = useAuth();
@@ -39,6 +40,8 @@ export default function MainLayout() {
                 return <Home />;
             case 'Read':
                 return <SelectedCard menuOption={activeMenu} />;
+            // case 'Alphabet':
+            //     return <AlphabetGrid />;
             case 'Recommendation':
                 return <Recommendation />;
             case 'Favourite':

@@ -69,6 +69,10 @@ export default function Sidebar({ className, data }) {
                     Read <i className="fa-brands fa-readme"></i>
                 </button>
 
+                <button className='navBtn' onClick={handleClicked} id='Alphabet'>
+                    Alphabet <i class="fa-solid fa-a"></i>
+                </button>
+
                 <button className='navBtn' onClick={handleClicked} id='Recommendation'>
                     Recommendation <i className="fa-regular fa-lightbulb"></i>
                 </button>
