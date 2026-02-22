@@ -40,8 +40,8 @@ export default function MainLayout() {
                 return <Home />;
             case 'Read':
                 return <SelectedCard menuOption={activeMenu} />;
-            // case 'Alphabet':
-            //     return <AlphabetGrid />;
+            case 'Alphabet':
+                return <AlphabetGrid />;
             case 'Recommendation':
                 return <Recommendation />;
             case 'Favourite':

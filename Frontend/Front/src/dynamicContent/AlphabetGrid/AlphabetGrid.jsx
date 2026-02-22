@@ -14,6 +14,8 @@ export default function AlphabetGrid() {
         try {
             const data = await getAllLetters();
             setLetters(data);
+            console.log(data);
+            
         } catch (error) {
             console.error('Error:', error);
         } finally {

@@ -7,38 +7,64 @@ export default function Home() {
 
     const [selectedLetter, setSelectedLetter] = useState(null);
 
-    const letterA = {
-        letter: "A", order: 1,
-        animal: {
-            name: "Alligator",
-            scientificName: "Alligator mississippiensis",
-            description: "A large reptile with powerful jaws and a long tail. Alligators are excellent swimmers and can hold their breath underwater for long periods.",
-            funFact: "Alligators can live up to 50 years in the wild and have been around for millions of years, even surviving the extinction of the dinosaurs!",
-            habitat: "Swamps, rivers, and freshwater lakes"
+    const letterE = {
+    "_id": {
+        "$oid": "699acc2bac68209fd83ad4c9"
+    },
+    "letter": "E",
+    "order": 5,
+    "animal": {
+        "name": "Elephant",
+        "scientificName": "Loxodonta",
+        "description": "Elephants are the largest land mammals on Earth, known for their intelligence, long trunks, and strong social bonds. They use their trunks for communication, feeding, and interacting with their environment.",
+        "funFact": "An elephant’s trunk has more than 40,000 muscles and can pick up objects as small as a grain of rice or as large as a tree branch.",
+        "habitat": "Savannas, forests, deserts, and marshes across Africa and Asia"
+    },
+    "media": {
+        "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/640px-African_Bush_Elephant.jpg",
+            "alt": "Elephant walking through the savanna"
         },
-        media: {
-            image: {
-                url: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.dolBZIqD7PKrMHQWv1PtNgHaE8%3Fpid%3DApi&f=1&ipt=db717d75091dbfbef2dc07137949f99c28b3b09508d1dcbbc2f705709157326e&ipo=images",
-                alt: "Alligator basking in the sun"
-            },
-            animation: {
-                url: "https://media3.giphy.com/media/cCEdVDtDeSGKecufGv/giphy.gif",
-                type: "gif"
-            },
-            sound: {
-                url: "https://upload.wikimedia.org/wikipedia/commons/a/a6/Alligator_mississippiensis_sound.ogg",
-                duration: 4,
-                youtubeUrl: "https://www.youtube.com/embed/GMsGKwbj9Ys"
-            }
+        "animation": {
+            "url": "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2Q1bndtNDluYW55ODl0YWQwYWVmNmc2ajRucXR2YTR2d3hwMHMzcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SWKyABQ08mbXW/giphy.gif",
+            "type": "gif"
         },
-        pronunciation: {
-            phonetic: "/ˈæl.ɪ.ɡeɪ.tər/",
-            audioUrl: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/alligator--_us_1.mp3"
+        "video": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c5/Indian_elephant_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_01.mpg/Indian_elephant_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_01.mpg.240p.vp9.webm",
+            "videoId": "",
+            "title": "Elephants: Gentle Giants of the Wild"
+        },
+        "sound": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Elephant_voice_-_trumpeting.ogg",
+            "duration": 5,
+            "format": "mp3"
         }
+    },
+    "pronunciation": {
+        "phonetic": "/ˈɛl.ɪ.fənt/",
+        "audioUrl": ""
+    },
+    "statistics": {
+        "viewCount": 0,
+        "playCount": 0,
+        "lastViewed": {
+            "$date": "2025-01-01T00:00:00.000Z"
+        }
+    },
+    "isActive": true,
+    "createdBy": {
+        "$oid": "000000000000000000000000"
+    },
+    "createdAt": {
+        "$date": "2025-01-01T00:00:00.000Z"
+    },
+    "updatedAt": {
+        "$date": "2025-01-01T00:00:00.000Z"
     }
+};
 
     const handleCardClick = () => {
-        setSelectedLetter(letterA);
+        setSelectedLetter(letterB);
     };
 
     const handleCloseModal = () => {
@@ -47,25 +73,8 @@ export default function Home() {
 
     return (
         <>
-            <div className="home-container">
-                <h1 className="home-title">Learn the Alphabet! 🎉</h1>
-                <p className="home-subtitle">Click on the card to explore!</p>
-
-                <div className="card-test-wrapper">
-                    <AlphabetCard 
-                        letter={letterA} 
-                        index={0}
-                        onClick={handleCardClick}
-                    />
-                </div>
-            </div>
-
-            {selectedLetter && (
-                <AlphabetModal
-                    letter={selectedLetter}
-                    onClose={handleCloseModal}
-                />
-            )}
+           
+            
         </>
     );
 }

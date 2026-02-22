@@ -70,7 +70,7 @@ export default function Sidebar({ className, data }) {
                 </button>
 
                 <button className='navBtn' onClick={handleClicked} id='Alphabet'>
-                    Alphabet <i class="fa-solid fa-a"></i>
+                    Alphabet <i className="fa-solid fa-a"></i>
                 </button>
 
                 <button className='navBtn' onClick={handleClicked} id='Recommendation'>
