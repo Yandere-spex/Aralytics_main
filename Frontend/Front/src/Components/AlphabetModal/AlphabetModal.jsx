@@ -1,31 +1,41 @@
 import { useState, useRef } from 'react';
 import './AlphabetModal.css';
 
+const isYouTube = (url) => {
+    if (!url) return false;
+    return url.includes('youtube.com') || url.includes('youtu.be');
+};
+
+const extractYouTubeId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|shorts\/|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+};
+
 export default function AlphabetModal({ letter, onClose }) {
     const [soundPlaying, setSoundPlaying] = useState(false);
     const [showVideo, setShowVideo] = useState(false);
     const audioRef = useRef(null);
 
-    console.log(letter);
-    
     const { animal, media, pronunciation } = letter;
 
     const videoUrl = media.video?.url;
+    const youTube = isYouTube(videoUrl);
+    const videoId = media.video?.videoId || extractYouTubeId(videoUrl);
 
     const handlePlaySound = () => {
-    if (audioRef.current) {
-        if (soundPlaying) {
-            // Pause
-            audioRef.current.pause();
-            setSoundPlaying(false);
-        } else {
-            // Play
-            audioRef.current.currentTime = 0;
-            audioRef.current.play();
-            setSoundPlaying(true);
+        if (audioRef.current) {
+            if (soundPlaying) {
+                audioRef.current.pause();
+                setSoundPlaying(false);
+            } else {
+                audioRef.current.currentTime = 0;
+                audioRef.current.play();
+                setSoundPlaying(true);
+            }
         }
-    }
-};
+    };
 
     const handleAudioEnd = () => setSoundPlaying(false);
 
@@ -87,10 +97,10 @@ export default function AlphabetModal({ letter, onClose }) {
                     {media.sound?.url ? (
                         <>
                             <button
-                                    className={`sound-button ${soundPlaying ? 'playing' : ''}`}
-                                    onClick={handlePlaySound}
-                                    >
-                                    {soundPlaying ? '⏸ Pause Sound' : '▶ Play Sound'}
+                                className={`sound-button ${soundPlaying ? 'playing' : ''}`}
+                                onClick={handlePlaySound}
+                            >
+                                {soundPlaying ? '⏸ Pause Sound' : '▶ Play Sound'}
                             </button>
 
                             <audio
@@ -101,7 +111,7 @@ export default function AlphabetModal({ letter, onClose }) {
                         </>
                     ) : null}
 
-                    {/* Wikimedia video — only loads <video> after user clicks */}
+                    {/* Video — iframe for YouTube, <video> for direct file URLs */}
                     {videoUrl && (
                         <div className="video-section">
                             {!showVideo ? (
@@ -120,15 +130,28 @@ export default function AlphabetModal({ letter, onClose }) {
                                         ✕ Close Video
                                     </button>
 
-                                    <video
-                                        width="100%"
-                                        height="220"
-                                        controls
-                                        src={videoUrl}
-                                        type="video/webm"
-                                    >
-                                        Your browser does not support the video tag.
-                                    </video>
+                                    {youTube && videoId ? (
+                                        // YouTube URL → embed iframe
+                                        <iframe
+                                            width="100%"
+                                            height="220"
+                                            src={`https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1`}
+                                            title={media.video?.title || animal.name}
+                                            frameBorder="0"
+                                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    ) : (
+                                        // Direct file (webm, mp4, ogv) → video tag
+                                        <video
+                                            width="100%"
+                                            height="220"
+                                            controls
+                                            src={videoUrl}
+                                        >
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    )}
                                 </div>
                             )}
                         </div>

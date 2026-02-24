@@ -41,7 +41,7 @@ export default function AlphabetGrid() {
     return (
     <>
         <div className="alphabet-container">
-            <h1 className="alphabet-title">Learn the Alphabet! 🎉</h1>
+            <h1 className="alphabet-title">Learn the Alphabet and Animal ! 🎉</h1>
             <p className="alphabet-subtitle">Click on any letter to discover an animal!</p>
             
             <div className="alphabet-grid">

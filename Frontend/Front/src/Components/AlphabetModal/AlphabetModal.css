@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: #1C4D8D;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,7 +71,7 @@
 
 /* Modal Header */
 .modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #425cd2 0%, #4c64ce 100%);
   padding: 40px 30px;
   display: flex;
   align-items: center;
@@ -205,7 +205,7 @@
 }
 
 .sound-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #425cd2 0%, #4c64ce 100%);
   color: white;
   border: none;
   padding: 15px 40px;
@@ -219,7 +219,7 @@
 
 .sound-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 8px 25px rgba(41, 73, 214, 0.6);
 }
 
 .sound-button.playing {
@@ -265,7 +265,7 @@
 }
 
 .pronunciation-button {
-  background: #667eea;
+  background: linear-gradient(135deg, #425cd2 0%, #4c64ce 100%);
   color: white;
   border: none;
   width: 35px;
@@ -277,7 +277,7 @@
 }
 
 .pronunciation-button:hover {
-  background: #764ba2;
+  background: #4e17cf;
   transform: scale(1.1);
 }
 
