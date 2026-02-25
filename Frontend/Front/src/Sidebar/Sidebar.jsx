@@ -61,8 +61,8 @@ export default function Sidebar({ className, data }) {
                     <p className="user-email">{user.email}</p>
                 </div>
 
-                <button className='navBtn' onClick={handleClicked} id='Home'>
-                    Home <i className="fa-regular fa-house"></i>
+                <button className='navBtn' onClick={handleClicked} id='Dashboard'>
+                    Dashboard <i className="fa-regular fa-house"></i>
                 </button>
 
                 <button className='navBtn' onClick={handleClicked} id='Read'>

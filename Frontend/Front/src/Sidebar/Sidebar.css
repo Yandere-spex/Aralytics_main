@@ -20,8 +20,13 @@
     transition-delay: 3000ms;
 }
 .navBtn:hover{
-    background-color: #BDE8F5;
+    background-color: hwb(0 22% 78%);
 }
+
+
 .logoutBtn{
     margin-top: auto;
+}
+.user-profile{
+    color: #FFFFFF;
 }

@@ -8,6 +8,7 @@ import ResultScreen from '../../../Components/ResultScreen/ResultScreen.jsx';
 import Button from '../../../Components/Button/Button';
 import TimerComponent from '../../../Components/Timer/Timer';
 import { getAllStories } from '../../../services/storyService.js';
+import { saveReadingResult } from '../../../services/Dashboardservice.js';
 
 
 export default function SelectedCard(){
@@ -40,7 +41,44 @@ export default function SelectedCard(){
     const [takeQUiz, setTakeQuiz] = useState(false);
 
 
+    const handleSaveResult = async (readingMetrics, quizResults) => {
+    try {
+        await saveReadingResult({
+            // WPM data from readingMetrics
+            storyTitle:         readingMetrics.storyTitle,
+            totalSeconds:       readingMetrics.totalSeconds,
+            totalMilliseconds:  readingMetrics.totalMilliseconds,
+            wpm:                readingMetrics.wpm,
+            wordCount:          readingMetrics.wordCount,
+            expectedWPM:        readingMetrics.expectedWPM,
+            speedRemark:        readingMetrics.speedRemark,
+            speedColor:         readingMetrics.speedColor,
 
+            // Comprehension data from quizResults
+            score:              quizResults.score,
+            totalQuestions:     quizResults.totalQuestions,
+            percentage:         quizResults.percentage,
+            userAnswers:        quizResults.userAnswers,
+            correctAnswers:     quizResults.correctAnswers,
+            remark:             quizResults.remark,
+            interpretation:     quizResults.interpretation,
+            questionResults:    quizResults.questionResults,
+
+            completedAt:        quizResults.completedAt,
+        });
+        console.log('Result saved successfully');
+    } catch (error) {
+        console.error('Failed to save result:', error);
+    }
+};
+
+const handleQuizComplete = async (results) => {
+    setQuizResults(results);
+    setStage('results');
+
+    // Save to DB right when quiz finishes
+    await handleSaveResult(readingMetrics, results);
+};
 
 
 
@@ -92,10 +130,6 @@ export default function SelectedCard(){
         setReadingMetrics(metrics);
         setStage('quiz'); 
     }
-    const handleQuizComplete = (results) => {
-        setQuizResults(results);
-        setStage('results');
-    };
 
     const handleRetry = () => {
         setReadingMetrics(null);
@@ -125,79 +159,6 @@ export default function SelectedCard(){
 
 
 
-
-
-
-//     const renderStep = (step) => {
-//     switch (step) {
-//         case 'select':
-//         return (
-//                 <div className="mainRead">
-//                         {loading ? (
-//                             <div className="loading fade-in">Loading stories...</div>
-//                         ) : stories.length === 0 ? (
-//                             <p className="fade-in">No stories available</p>
-//                         ) : (
-//                             stories.map((card, idx) => (
-//                                 <div 
-//                                     key={card._id ?? idx}
-//                                     className={`card-wrapper stagger-${Math.min(idx + 1, 5)}`}
-//                                 >
-//                                     <ReadCard
-//                                         stories={card}
-//                                         onClick={() => handleStorySelect(card)}
-//                                     />
-//                                 </div>
-//                             ))
-//                         )}
-//                     </div>
-//         );
-
-
-//         case 'reading': 
-//         return(
-//             <StoryReader 
-//                     quizPackage={selectedStory}
-//                     selectedCard={selectedStory}
-//                     onComplete={handleReadingComplete}
-//                     isBlurred={start}
-//                     timer={ 
-//                             <TimerComponent 
-//                             ref={timerRef}
-//                             showControls={false}
-//                             onTimeUpdate={handleTimeUpdate}
-//                         /> 
-//                     }
-//                     button={
-//                         <Button width='250px' type='button' style={start} onClick={handleStart}>
-//                             {start === false ?  'Start'  : 'Done'}    
-//                         </Button>
-//                         }
-//                 />
-//         )
-//         case 'quiz':  
-//         return(
-//         <QuizWrapper 
-//                     quizPackage={selectedStory}
-//                     readingMetrics={readingMetrics}  // Pass reading data
-//                     onComplete={handleQuizComplete}
-//                 />
-
-//         );
-
-//         case 'results':  
-//         return(
-//             <ResultScreen 
-//                     storyInfo={selectedStory.information}
-//                     readingMetrics={readingMetrics}
-//                     quizResults={quizResults}
-//                     onRetry={handleRetry}
-//                     onAnotherStory={onAnotherStory}
-//                 />
-//         );
-//         default:        return <h1>Error</h1>;
-//     }
-// };
 const renderStep = (step) => {
     switch (step) {
         case 'select':
@@ -286,43 +247,7 @@ const renderStep = (step) => {
 
     return(
         <>
-
-{/*         
-        {onBackToStoriesState && ( 
-            <div className={selectedCard === null ? 'mainRead' : ''}>
-                {selectedStory === null
-                    ? stories.map((card, index) => (
-                        <ReadCard
-                            key={card._id || index}
-                            stories={card}
-                            onClick={handleStorySelect}
-                        />
-                    ))
-                    : (
-                    <CardGrid 
-                        selectedCard={selectedStory}
-                        onBackToStories={onBackToStories}
-                    />
-                )}
-
-            </div>
-        )}
-            
-         */}
-
-
-        {renderStep(stage)}
-
-
-
-
-
-
-
-
-
-
-
+            {renderStep(stage)}
         </>
     )
 }

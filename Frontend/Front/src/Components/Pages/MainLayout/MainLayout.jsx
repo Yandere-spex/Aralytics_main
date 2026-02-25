@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import Sidebar from '../../../Sidebar/Sidebar';
-import Home from '../../../dynamicContent/Home/Home.jsx';
+import Dashboard from '../../../dynamicContent/Dashboard/Dashboard.jsx';
 import Recommendation from '../../../dynamicContent/Recommendation/Recommendation.jsx';
 import MenuButton from '../../MenuButton/MenuButton.jsx';
 import Favourite from '../../../dynamicContent/Favourite/Favourite.jsx';
@@ -36,8 +36,8 @@ export default function MainLayout() {
 
     const conditionalRender = () => {
         switch (active) {
-            case 'Home':
-                return <Home />;
+            case 'Dashboard':
+                return <Dashboard />;
             case 'Read':
                 return <SelectedCard menuOption={activeMenu} />;
             case 'Alphabet':
@@ -47,7 +47,7 @@ export default function MainLayout() {
             case 'Favourite':
                 return <Favourite />;
             default:
-                return <Home />;
+                return <Dashboard />;
         }
     };
 

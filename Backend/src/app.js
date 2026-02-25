@@ -58,6 +58,8 @@ app.use('/api/stories', require('./routes/storyRoutes'));
 app.use('/api/results', require('./routes/resultRoutes'));
 app.use('/api/alphabet', require('./routes/Alphabetroutes'));
 
+app.use('/api/reading-results', require('./routes/Readingresultroutes.js'));
+app.use('/api/dashboard',       require('./routes/Dashboardroutes.js'));
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });

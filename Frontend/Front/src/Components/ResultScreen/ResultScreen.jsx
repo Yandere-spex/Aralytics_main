@@ -1,6 +1,12 @@
 import './ResultScreen.css';
 
 export default function ResultScreen({ storyInfo, readingMetrics, quizResults, onRetry, onAnotherStory }) {
+
+    console.log(readingMetrics);
+    console.log(quizResults);
+    
+    
+
     return (
         <div className="results-screen">
             <h1>🎉 Assessment Complete!</h1>

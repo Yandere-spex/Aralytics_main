@@ -32,7 +32,7 @@ export default function AlphabetCard({ letter, index, onClick }) {
 
         {/* Hover Effect */}
         <div className="card-overlay">
-            <span className="click-hint">Click to explore! 🔍</span>
+            <span className="click-hint">Click to explore!</span>
         </div>
         </div>
     );
