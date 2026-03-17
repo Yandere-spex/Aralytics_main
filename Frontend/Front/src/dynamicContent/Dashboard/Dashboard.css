@@ -13,7 +13,7 @@
 /* ── HEADER ── */
 .dashboard-header { margin-bottom: 24px; }
 .dashboard-header h1 { font-size: 1.8rem; font-weight: 800; }
-.dashboard-sub { color: #6b6b80; font-size: 0.85rem; margin-top: 4px; }
+.dashboard-sub { color: #ffffff; font-size: 1rem; margin-top: 4px; }
 
 /* ── TABS ── */
 .dashboard-tabs { display: flex; gap: 8px; margin-bottom: 28px; }

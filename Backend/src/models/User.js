@@ -33,13 +33,18 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
+    enum: ['user', 'student', 'teacher', 'admin'],  // ← add student & teacher
+    default: 'student'   // ← change default from 'user' to 'student'
+},
   isActive: {
     type: Boolean,
     default: true
-  }
+  },
+  teacher: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User',
+  default: null   // only populated for students
+},
 }, {
   timestamps: true
 });

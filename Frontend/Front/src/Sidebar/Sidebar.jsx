@@ -1,5 +1,5 @@
 import './Sidebar.css';
-import logo from '../../src/assets/imageCover/logo.jpg';
+import logo from '../../src/assets/imageCover/aralytics_Cover.jpg';
 import { useAuth } from '../context/AuthContext.jsx';
 import LogoutModal from '../Components/Logout/LogoutModal.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -75,10 +75,6 @@ export default function Sidebar({ className, data }) {
 
                 <button className='navBtn' onClick={handleClicked} id='Recommendation'>
                     Recommendation <i className="fa-regular fa-lightbulb"></i>
-                </button>
-
-                <button className='navBtn' onClick={handleClicked} id='Favourite'>
-                    Favourite <i className="fa-regular fa-heart"></i>
                 </button>
 
                 <button className='navBtn logoutBtn' onClick={handleClicked} id='Logout'>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext(undefined);
 
@@ -11,71 +11,68 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [user, setUser]       = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError]     = useState(null);
 
-    // ✅ Fetch function - only runs when called
+    // ── Shared fetch logic (used by MainLayout + on page refresh) ─
     const fetchUserData = useCallback(async () => {
         setLoading(true);
         setError(null);
 
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            setUser(null);
+            setLoading(false);
+            return;
+        }
+
         try {
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                console.log('No token found');
-                setUser(null);
-                setLoading(false);
-                return;
-            }
-
-            console.log('🔍 Fetching user data...');
-
             const response = await fetch('http://localhost:5000/api/auth/me', {
-                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 }
             });
 
-            console.log('Response status:', response.status);
-
             if (response.ok) {
                 const data = await response.json();
-                console.log('✅ User data fetched:', data.data.user);
                 setUser(data.data.user);
             } else {
-                console.log('❌ Token invalid, clearing storage');
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 setUser(null);
             }
         } catch (err) {
-            console.error('❌ Error fetching user:', err);
-            
-            if (err.message === 'Failed to fetch') {
-                setError('Cannot connect to server. Please check if the backend is running.');
-            } else {
-                setError(err.message);
-            }
+            console.error('fetchUserData error:', err);
+            setError('Cannot connect to server. Please check if the backend is running.');
         } finally {
             setLoading(false);
-            console.log('Loading complete');
         }
     }, []);
 
+    // ── Restore session on page refresh ──────────────────────────
+    useEffect(() => {
+        fetchUserData();
+    }, [fetchUserData]);
+
+    // ── Called immediately after signup or login ──────────────────
+    const login = useCallback((userData, token) => {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        setLoading(false);
+    }, []);
+
+    // ── Logout ────────────────────────────────────────────────────
     const logout = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
-            
             if (token) {
                 await fetch('http://localhost:5000/api/auth/logout', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
             }
         } catch (err) {
@@ -91,9 +88,10 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         error,
+        login,
         logout,
-        fetchUserData,
-        isAuthenticated: !!user
+        fetchUserData,       // ← this was missing from your saved version
+        isAuthenticated: !!user,
     };
 
     return (

@@ -60,6 +60,7 @@ app.use('/api/alphabet', require('./routes/Alphabetroutes'));
 
 app.use('/api/reading-results', require('./routes/Readingresultroutes.js'));
 app.use('/api/dashboard',       require('./routes/Dashboardroutes.js'));
+app.use('/api/teacher', require('./routes/teacher'));
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });

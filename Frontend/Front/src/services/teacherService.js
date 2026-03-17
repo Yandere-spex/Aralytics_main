@@ -1,0 +1,22 @@
+const BASE = 'http://localhost:5000/api';
+
+const authHeaders = () => ({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+});
+
+export const getTeacherDashboard = async () => {
+    const res = await fetch(`${BASE}/teacher/dashboard`, { headers: authHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch dashboard');
+    const data = await res.json();
+    return data;
+};
+
+export const enrollStudent = async (studentId) => {
+    const res = await fetch(`${BASE}/teacher/enroll/${studentId}`, {
+        method: 'POST',
+        headers: authHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to enroll student');
+    return res.json();
+};

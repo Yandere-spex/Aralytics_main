@@ -1,56 +1,54 @@
-import { useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
-export const useAuth = () => {
-    const [user, setUser] = useState(null);
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+    const [user, setUser]       = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchUser = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) { setLoading(false); return; }
+
             try {
-                // Get token from localStorage
-                const token = localStorage.getItem('token');
-                
-                if (!token) {
-                    // No token - redirect to login
-                    window.location.href = '/login';
-                    return;
-                }
-
-                // Call /getMe endpoint
-                const response = await fetch('http://localhost:5000/api/auth/me', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` // Send token in header
-                    }
+                const res = await fetch('http://localhost:5000/api/auth/me', {
+                    headers: { Authorization: `Bearer ${token}` }
                 });
-
-                if (response.ok) {
-                    const data = await response.json();
+                if (res.ok) {
+                    const data = await res.json();
                     setUser(data.data.user);
                 } else {
-                    // Token invalid or expired - redirect to login
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
-                    window.location.href = '/login';
                 }
             } catch (err) {
-                console.error('Error fetching user:', err);
-                setError(err.message);
+                console.error('Auth fetch error:', err);
             } finally {
                 setLoading(false);
             }
         };
+        fetchUser();
+    }, []);
 
-        fetchUserData();
-    }, []); // Empty dependency array - run once on mount
+    const login = (userData, token) => {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+    };
 
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        setUser(null);
         window.location.href = '/login';
     };
 
-    return { user, loading, error, logout };
-};
+    return (
+        <AuthContext.Provider value={{ user, loading, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+export const useAuth = () => useContext(AuthContext);

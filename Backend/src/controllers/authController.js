@@ -4,7 +4,10 @@ const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 
 exports.register = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, password, confirmPassword } = req.body;
+    const { firstName, lastName, email, password, confirmPassword, role } = req.body;
+
+ 
+ 
 
   if (!firstName || !lastName || !email || !password || !confirmPassword) {
     throw new ApiError(400, 'Please provide all required fields');
@@ -23,8 +26,9 @@ exports.register = asyncHandler(async (req, res) => {
     firstName,
     lastName,
     email,
-    password
-  });
+    password,
+    role: role || 'student',
+  })
 
   const token = user.generateToken();
 

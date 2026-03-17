@@ -1,0 +1,21 @@
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+export default function ProtectedRoute({ children, allowedRoles }) {
+    const { user, loading } = useAuth();
+
+    if (loading) return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <div className="spinner" />
+        </div>
+    );
+
+    if (!user) return <Navigate to="/login" replace />;
+
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+        // Wrong role — send each to their home
+        return <Navigate to={user.role === 'teacher' ? '/teacher' : '/Mainlayout'} replace />;
+    }
+
+    return children;
+}

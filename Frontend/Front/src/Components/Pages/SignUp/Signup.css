@@ -47,3 +47,17 @@
 .logoDes{
     color: #effeff;
 }
+
+/* Role selector */
+.role-selector { width: 100%; margin: 8px 0; }
+.role-label { font-size: 13px; color: #aaa; display: block; margin-bottom: 8px; }
+.role-options { display: flex; gap: 12px; }
+.role-option {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 6px; padding: 12px; border-radius: 10px;
+    border: 2px solid #2a2a3e; cursor: pointer;
+    font-size: 13px; color: #aaa; transition: all 0.2s;
+}
+.role-option input[type="radio"] { display: none; }
+.role-option i { font-size: 20px; }
+.role-option.active { border-color: #7F77DD; color: #7F77DD; background: #1a1830; }

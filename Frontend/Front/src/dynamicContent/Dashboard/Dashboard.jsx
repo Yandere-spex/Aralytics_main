@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getDashboard } from '../../services/Dashboardservice.js';
 import './Dashboard.css';
 
-// ── SMALL STAT CARD ──────────────────────────────────────────────
+// ── STAT CARD ────────────────────────────────────────────────────
 const StatCard = ({ icon, label, value, sub, color }) => (
     <div className="stat-card" style={{ '--accent': color }}>
         <div className="stat-icon">{icon}</div>
@@ -26,22 +26,19 @@ const ProgressBar = ({ label, value, max, color }) => {
     );
 };
 
-// ── TREND MINI CHART (pure CSS bars) ─────────────────────────────
+// ── TREND CHART ───────────────────────────────────────────────────
 const TrendChart = ({ data, valueKey, color, label }) => {
     if (!data || data.length === 0) return null;
-    const max = Math.max(...data.map(d => d[valueKey]));
+    const max = Math.max(...data.map(d => d[valueKey]), 1);
     return (
         <div className="trend-chart">
             <div className="trend-label">{label}</div>
             <div className="trend-bars">
                 {data.map((d, i) => (
-                    <div key={i} className="trend-bar-wrap" title={`${d.label}: ${d[valueKey]}`}>
+                    <div key={i} className="trend-bar-wrap" title={`Session ${d.session}: ${d[valueKey]}`}>
                         <div
                             className="trend-bar"
-                            style={{
-                                height: `${max > 0 ? (d[valueKey] / max) * 100 : 0}%`,
-                                background: color,
-                            }}
+                            style={{ height: `${(d[valueKey] / max) * 100}%`, background: color }}
                         />
                         <div className="trend-tick">{d.session}</div>
                     </div>
@@ -51,8 +48,8 @@ const TrendChart = ({ data, valueKey, color, label }) => {
     );
 };
 
-// ── RECENT ROW ───────────────────────────────────────────────────
-const RecentRow = ({ title, wpm, percentage, completedAt }) => (
+// ── RECENT READING ROW ────────────────────────────────────────────
+const RecentReadingRow = ({ title, wpm, percentage, completedAt }) => (
     <div className="recent-row">
         <div className="recent-info">
             <div className="recent-title">{title}</div>
@@ -67,11 +64,25 @@ const RecentRow = ({ title, wpm, percentage, completedAt }) => (
     </div>
 );
 
-// ── DONUT RING (SVG) ─────────────────────────────────────────────
+// ── RECENT QUIZ ROW ───────────────────────────────────────────────
+const RecentQuizRow = ({ item }) => (
+    <div className="recent-row">
+        <div className="recent-info">
+            <div className="recent-title">{item.correctCount}/{item.totalQuestions} correct · {item.mode} mode</div>
+            <div className="recent-date">{new Date(item.completedAt).toLocaleDateString()}</div>
+        </div>
+        <div className="recent-badges">
+            <span className="badge quiz-score-badge">{item.score}%</span>
+            <span className="badge quiz-pts-badge">+{item.pointsEarned} pts</span>
+        </div>
+    </div>
+);
+
+// ── DONUT RING ────────────────────────────────────────────────────
 const DonutRing = ({ percentage, color, size = 100 }) => {
-    const r = 38;
-    const circ = 2 * Math.PI * r;
-    const offset = circ - (percentage / 100) * circ;
+    const r      = 38;
+    const circ   = 2 * Math.PI * r;
+    const offset = circ - (Math.min(percentage, 100) / 100) * circ;
     return (
         <svg width={size} height={size} viewBox="0 0 100 100">
             <circle cx="50" cy="50" r={r} fill="none" stroke="#1e1e2e" strokeWidth="12" />
@@ -90,41 +101,39 @@ const DonutRing = ({ percentage, color, size = 100 }) => {
     );
 };
 
-// ── MAIN DASHBOARD ───────────────────────────────────────────────
+// ── MAIN DASHBOARD ────────────────────────────────────────────────
 export default function Dashboard() {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [data, setData]           = useState(null);
+    const [loading, setLoading]     = useState(true);
+    const [error, setError]         = useState(null);
     const [activeTab, setActiveTab] = useState('reading');
 
-
-    
+    // ✅ Single useEffect only
     useEffect(() => {
-    const fetchDashboard = async () => {
-        const data = await getDashboard();
-        setData(data);
-    };
-    fetchDashboard();
-}, []);
-
-
-    useEffect(() => {
-        const fetch = async () => {
+        const fetchDashboard = async () => {
             try {
                 const result = await getDashboard();
                 setData(result);
             } catch (err) {
                 console.error('Dashboard fetch error:', err);
+                setError('Failed to load dashboard.');
             } finally {
                 setLoading(false);
             }
         };
-        fetch();
+        fetchDashboard();
     }, []);
 
     if (loading) return (
         <div className="dashboard-loading">
             <div className="loading-spinner" />
             <p>Loading your stats...</p>
+        </div>
+    );
+
+    if (error) return (
+        <div className="dashboard-empty">
+            <p style={{ color: '#ff6b6b' }}>{error}</p>
         </div>
     );
 
@@ -139,34 +148,33 @@ export default function Dashboard() {
     return (
         <div className="dashboard">
 
-            {/* ── HEADER ── */}
+            {/* HEADER */}
             <div className="dashboard-header">
                 <h1> My Dashboard</h1>
-                <p className="dashboard-sub">Track your reading and quiz progress</p>
+                <p className="dashboard-sub">Track your Reading (WPS) and Comprehension</p>
             </div>
 
-            {/* ── TABS ── */}
+            {/* TABS */}
             <div className="dashboard-tabs">
                 <button
                     className={`tab-btn ${activeTab === 'reading' ? 'active' : ''}`}
                     onClick={() => setActiveTab('reading')}
                 >
-                    Reading
+                    WPS and Comprehension
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`}
                     onClick={() => setActiveTab('quiz')}
                 >
-                    Quiz
+                    Animal Knowdlege
                 </button>
             </div>
 
-            {/* ══════════════════════════════════════════
+            {/* ══════════════════════════════════════
                 READING TAB
-            ══════════════════════════════════════════ */}
+            ══════════════════════════════════════ */}
             {activeTab === 'reading' && (
                 <div className="tab-content">
-
                     {reading.totalStoriesRead === 0 ? (
                         <div className="empty-state">
                             <span>📖</span>
@@ -174,15 +182,13 @@ export default function Dashboard() {
                         </div>
                     ) : (
                         <>
-                            {/* Top stat cards */}
                             <div className="stats-grid">
-                                <StatCard icon="📚" label="Stories Read"    value={reading.totalStoriesRead}  color="#4ecdc4" />
-                                <StatCard icon="🔤" label="Words Read"      value={reading.totalWordsRead.toLocaleString()} color="#f5a623" />
-                                <StatCard icon="⚡" label="Avg Speed"       value={`${reading.avgWPM} WPM`}  color="#a78bfa" />
-                                <StatCard icon="🧠" label="Avg Comprehension" value={`${reading.avgComprehension}%`} color="#34d399" />
+                                <StatCard icon="📚" label="Stories Read"      value={reading.totalStoriesRead}                color="#4ecdc4" />
+                                <StatCard icon="🔤" label="Words Read"        value={reading.totalWordsRead.toLocaleString()} color="#f5a623" />
+                                <StatCard icon="⚡" label="Avg Speed"         value={`${reading.avgWPM} WPM`}                color="#a78bfa" />
+                                <StatCard icon="🧠" label="Avg Comprehension" value={`${reading.avgComprehension}%`}          color="#34d399" />
                             </div>
 
-                            {/* Donut rings */}
                             <div className="section-title">Overall Performance</div>
                             <div className="donuts-row">
                                 <div className="donut-wrap">
@@ -190,32 +196,24 @@ export default function Dashboard() {
                                     <div className="donut-label">Avg Comprehension</div>
                                 </div>
                                 <div className="donut-wrap">
-                                    <DonutRing
-                                        percentage={Math.min(Math.round((reading.avgWPM / 300) * 100), 100)}
-                                        color="#a78bfa"
-                                    />
+                                    <DonutRing percentage={Math.min(Math.round((reading.avgWPM / 300) * 100), 100)} color="#a78bfa" />
                                     <div className="donut-label">Reading Speed</div>
                                     <div className="donut-sub">{reading.avgWPM} / 300 WPM</div>
                                 </div>
                                 <div className="donut-wrap">
-                                    <DonutRing
-                                        percentage={Math.min(Math.round((reading.totalStoriesRead / 20) * 100), 100)}
-                                        color="#f5a623"
-                                    />
+                                    <DonutRing percentage={Math.min(Math.round((reading.totalStoriesRead / 20) * 100), 100)} color="#f5a623" />
                                     <div className="donut-label">Stories Goal</div>
                                     <div className="donut-sub">{reading.totalStoriesRead} / 20</div>
                                 </div>
                             </div>
 
-                            {/* Speed distribution */}
                             <div className="section-title">Reading Speed Distribution</div>
                             <div className="dist-section">
-                                <ProgressBar label="🐢 Slow (< 150 WPM)"       value={reading.speedDistribution.slow}   max={reading.totalStoriesRead} color="#ff6b6b" />
-                                <ProgressBar label="✅ Normal (150–250 WPM)"    value={reading.speedDistribution.normal} max={reading.totalStoriesRead} color="#34d399" />
-                                <ProgressBar label="⚡ Fast (> 250 WPM)"        value={reading.speedDistribution.fast}   max={reading.totalStoriesRead} color="#a78bfa" />
+                                <ProgressBar label="🐢 Slow (< 150 WPM)"     value={reading.speedDistribution.slow}   max={reading.totalStoriesRead} color="#ff6b6b" />
+                                <ProgressBar label="✅ Normal (150–250 WPM)"  value={reading.speedDistribution.normal} max={reading.totalStoriesRead} color="#34d399" />
+                                <ProgressBar label="⚡ Fast (> 250 WPM)"      value={reading.speedDistribution.fast}   max={reading.totalStoriesRead} color="#a78bfa" />
                             </div>
 
-                            {/* Comprehension distribution */}
                             <div className="section-title">Comprehension Distribution</div>
                             <div className="dist-section">
                                 <ProgressBar label="🌟 Excellent (≥ 80%)"  value={reading.comprehensionDistribution.excellent}  max={reading.totalStoriesRead} color="#34d399" />
@@ -223,18 +221,16 @@ export default function Dashboard() {
                                 <ProgressBar label="📝 Needs Work (< 60%)" value={reading.comprehensionDistribution.needsWork}  max={reading.totalStoriesRead} color="#ff6b6b" />
                             </div>
 
-                            {/* Trend chart */}
                             {reading.trend && reading.trend.length > 1 && (
                                 <>
                                     <div className="section-title">Progress Over Sessions</div>
                                     <div className="charts-row">
                                         <TrendChart data={reading.trend} valueKey="wpm"           color="#a78bfa" label="WPM per Session" />
-                                        <TrendChart data={reading.trend} valueKey="comprehension" color="#34d399" label="Comprehension % per Session" />
+                                        <TrendChart data={reading.trend} valueKey="comprehension" color="#34d399" label="Comprehension %" />
                                     </div>
                                 </>
                             )}
 
-                            {/* Personal bests */}
                             <div className="section-title">Personal Bests</div>
                             <div className="bests-row">
                                 <div className="best-card">
@@ -249,11 +245,10 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            {/* Recent stories */}
                             <div className="section-title">Recent Stories</div>
                             <div className="recent-list">
                                 {reading.recentStories.map((s, i) => (
-                                    <RecentRow
+                                    <RecentReadingRow
                                         key={i}
                                         title={s.storyTitle}
                                         wpm={s.wpm}
@@ -267,9 +262,9 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* ══════════════════════════════════════════
-                QUIZ TAB (placeholder until quiz is built)
-            ══════════════════════════════════════════ */}
+            {/* ══════════════════════════════════════
+                QUIZ TAB
+            ══════════════════════════════════════ */}
             {activeTab === 'quiz' && (
                 <div className="tab-content">
                     {quiz.totalSessions === 0 ? (
@@ -278,12 +273,64 @@ export default function Dashboard() {
                             <p>No quizzes taken yet. Try the Animal Quiz!</p>
                         </div>
                     ) : (
-                        <div className="stats-grid">
-                            <StatCard icon="🎯" label="Quizzes Taken"    value={quiz.totalSessions} color="#f5a623" />
-                            <StatCard icon="📊" label="Average Score"    value={`${quiz.avgScore}%`} color="#4ecdc4" />
-                            <StatCard icon="🏆" label="Best Score"       value={`${quiz.bestScore}%`} color="#34d399" />
-                            <StatCard icon="💎" label="Total Points"     value={quiz.totalPoints} color="#a78bfa" />
-                        </div>
+                        <>
+                            <div className="stats-grid">
+                                <StatCard icon="🎯" label="Quizzes Taken"  value={quiz.totalSessions}                color="#f5a623" />
+                                <StatCard icon="📊" label="Average Score"  value={`${quiz.avgScore}%`}              color="#4ecdc4" />
+                                <StatCard icon="🏆" label="Best Score"     value={`${quiz.bestScore}%`}             color="#34d399" />
+                                <StatCard icon="💎" label="Total Points"   value={quiz.totalPoints.toLocaleString()} color="#a78bfa" />
+                            </div>
+
+                            <div className="section-title">Overall Performance</div>
+                            <div className="donuts-row">
+                                <div className="donut-wrap">
+                                    <DonutRing percentage={quiz.avgScore}  color="#4ecdc4" />
+                                    <div className="donut-label">Avg Score</div>
+                                </div>
+                                <div className="donut-wrap">
+                                    <DonutRing percentage={quiz.bestScore} color="#34d399" />
+                                    <div className="donut-label">Best Score</div>
+                                </div>
+                                <div className="donut-wrap">
+                                    <DonutRing percentage={Math.min(Math.round((quiz.totalSessions / 20) * 100), 100)} color="#f5a623" />
+                                    <div className="donut-label">Quiz Goal</div>
+                                    <div className="donut-sub">{quiz.totalSessions} / 20</div>
+                                </div>
+                            </div>
+
+                            <div className="section-title">More Stats</div>
+                            <div className="dist-section">
+                                <div className="info-row">
+                                    <span>❓ Total Questions Answered</span>
+                                    <span>{quiz.totalQuestionsAnswered}</span>
+                                </div>
+                                <div className="info-row">
+                                    <span>⏱ Avg Time Per Quiz</span>
+                                    <span>{quiz.avgTimeTaken}s</span>
+                                </div>
+                                <div className="info-row">
+                                    <span>🔥 Current Streak</span>
+                                    <span>{quiz.streakCurrent} day{quiz.streakCurrent !== 1 ? 's' : ''}</span>
+                                </div>
+                            </div>
+
+                            {quiz.trend && quiz.trend.length > 1 && (
+                                <>
+                                    <div className="section-title">Score Trend</div>
+                                    <div className="charts-row">
+                                        <TrendChart data={quiz.trend} valueKey="score"  color="#4ecdc4" label="Score % per Session" />
+                                        <TrendChart data={quiz.trend} valueKey="points" color="#f5a623" label="Points per Session"   />
+                                    </div>
+                                </>
+                            )}
+
+                            <div className="section-title">Recent Quizzes</div>
+                            <div className="recent-list">
+                                {quiz.recentSessions.map((s, i) => (
+                                    <RecentQuizRow key={i} item={s} />
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
             )}
