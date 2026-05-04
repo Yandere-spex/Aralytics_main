@@ -1,7 +1,7 @@
 /* Container */
 .alphabet-container {
   min-height: 100vh;
-
+  position: relative;
   background: linear-gradient(135deg, #1C4D8D 0%, #BDE8F5 100%);
   padding: 40px 20px;
 }
@@ -38,6 +38,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  margin-top: 80px;
 }
 
 /* Loading */
@@ -77,3 +78,24 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+.tab-btn1 {
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: 1px solid #1e1e2e;
+    background: #104d9d;
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tab-btn1.active {   
+  background: #006eff; color: white; 
+  border-color: #4ecdc4; 
+  
+
+}
+.tab-btn:hover { border-color: #4ecdc4; color: #e8e8f0; }

@@ -47,3 +47,48 @@
 .logoDes{
     color: #effeff;
 }
+
+
+
+  .logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /* ── The Icon ── */
+  .icon {
+    --size: clamp(120px, 30vw, 220px);
+    --border: clamp(3px, 0.8vw, 6px);
+    --radius: clamp(12px, 3vw, 22px);
+
+    width: var(--size);
+    height: var(--size);
+    background: transparent;
+    border-radius: var(--radius);
+    border: var(--border) solid #111;
+    box-shadow: clamp(3px, 0.8vw, 6px) clamp(3px, 0.8vw, 6px) 0 #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+    }
+
+    .icon:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: clamp(5px, 1.2vw, 9px) clamp(5px, 1.2vw, 9px) 0 #111;
+    }
+
+    .icon:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 #111;
+    }
+
+    /* ── SVG scales fluidly inside the icon ── */
+    .icon svg {
+        width: 72%;
+        height: 72%;
+    }

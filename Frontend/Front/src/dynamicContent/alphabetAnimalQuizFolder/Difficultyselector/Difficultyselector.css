@@ -1,0 +1,114 @@
+.diff-wrapper {
+    min-height: 100vh;
+    background: #0f1117;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.diff-backBtn {
+    align-self: flex-start;
+    background: none;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: all 0.2s;
+}
+
+.diff-backBtn:hover {
+    border-color: #aaa;
+    color: #fff;
+}
+
+.diff-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.diff-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.5rem;
+    letter-spacing: -1px;
+}
+
+.diff-subtitle {
+    color: #888;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.diff-cards {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.diff-card {
+    background: #1a1d27;
+    border: 2px solid #2a2d3a;
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+}
+
+.diff-card:hover,
+.diff-card-hovered {
+    border-color: var(--accent);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.diff-emoji {
+    font-size: 2.5rem;
+}
+
+.diff-level {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.diff-qCount {
+    font-size: 0.8rem;
+    background: #2a2d3a;
+    color: #aaa;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+}
+
+.diff-desc {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0.5rem 0;
+    line-height: 1.5;
+}
+
+.diff-startBtn {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.diff-card:hover .diff-startBtn {
+    opacity: 1;
+}

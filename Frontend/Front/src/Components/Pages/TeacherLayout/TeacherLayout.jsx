@@ -27,10 +27,12 @@ export default function TeacherLayout() {
                         <i className="fa-solid fa-chart-line"></i>
                         {sidebarOpen && <span>Dashboard</span>}
                     </button>
+
                     <button className="nav-item" onClick={() => navigate('/teacher/students')}>
                         <i className="fa-solid fa-users"></i>
                         {sidebarOpen && <span>Students</span>}
                     </button>
+                
                 </nav>
 
                 <div className="sidebar-footer">

@@ -1,11 +1,6 @@
 import './ReadCard.css';
 
 export default function ReadCard({ stories ,onClick }) {
-    
-    // Capitalize difficulty level for display
-    
-
-
     return (
         <div className='readCardContainer'>
             <img 

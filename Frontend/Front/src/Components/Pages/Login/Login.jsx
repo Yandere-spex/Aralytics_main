@@ -54,7 +54,38 @@ export default function Login() {
     return (
         <div className="main-wrapper">
             <div className="loginContainer">
-                <img className="logo" src={logo} alt="Logo" />
+                
+                
+<div class="logo-wrap">
+
+    <div class="icon" role="img" aria-label="Open book with bookmark">
+        <svg viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 14 Q8 10 13 10 L47 10 L47 78 Q47 82 42 82 L13 82 Q8 82 8 78 Z"
+                fill="white" stroke="#111" stroke-width="4.5" stroke-linejoin="round"/>
+        <path d="M53 10 L87 10 Q92 10 92 14 L92 78 Q92 82 87 82 L58 82 Q53 82 53 78 Z"
+                fill="white" stroke="#111" stroke-width="4.5" stroke-linejoin="round"/>
+        <line x1="50" y1="10" x2="50" y2="82" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+
+        <line x1="18" y1="26" x2="41" y2="26" stroke="#111" stroke-width="3.8" stroke-linecap="round"/>
+        <line x1="18" y1="35" x2="41" y2="35" stroke="#111" stroke-width="3.8" stroke-linecap="round"/>
+        <line x1="18" y1="44" x2="41" y2="44" stroke="#111" stroke-width="3.8" stroke-linecap="round"/>
+        <line x1="18" y1="53" x2="41" y2="53" stroke="#111" stroke-width="3.8" stroke-linecap="round"/>
+
+
+        <line x1="59" y1="44" x2="82" y2="44" stroke="#111" stroke-width="3.8" stroke-linecap="round"/>
+        <line x1="59" y1="53" x2="82" y2="53" stroke="#111" stroke-width="3.8" stroke-linecap="round"/>
+        <line x1="59" y1="62" x2="82" y2="62" stroke="#111" stroke-width="3.8" stroke-linecap="round"/>
+
+
+        <path d="M68 4 L82 4 L82 28 L75 22 L68 28 Z"
+                fill="#007bff" stroke="#111" stroke-width="3.5" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+</div>
+
+
+
                 <h2 className="logotext">Aralytics</h2>
                 <h3 className="logoDes">Learning Platform</h3>
 

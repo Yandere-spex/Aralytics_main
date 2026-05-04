@@ -39,3 +39,16 @@ export const incrementPlayCount = async (letter) => {
     const data = await response.json();
     return data.data;
 };
+export const getQuestionsByDifficulty = async (difficulty) => {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`http://localhost:5000/api/questions?difficulty=${difficulty}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+    return data.data;
+};
+

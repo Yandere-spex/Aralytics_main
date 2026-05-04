@@ -16,8 +16,20 @@
 .dashboard-sub { color: #ffffff; font-size: 1rem; margin-top: 4px; }
 
 /* ── TABS ── */
-.dashboard-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
+.dashboard-tabs {    
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;   /* prevents vertical overlap */
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap; 
+    
+}
 .tab-btn {
+    display: inline-block;   /* ensures proper spacing */
+    white-space: nowrap;     /* prevents text wrapping inside */
+    flex-shrink: 0;          /* stops squishing/overlap */
+
     padding: 10px 24px;
     border-radius: 50px;
     border: 1px solid #1e1e2e;
