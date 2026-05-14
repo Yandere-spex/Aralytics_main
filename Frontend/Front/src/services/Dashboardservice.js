@@ -40,3 +40,22 @@ export const getMyReadingStats = async () => {
     const data = await res.json();
     return data.data;
 };
+
+// POST /api/quiz/complete — save full quiz session + all attempts in one call
+// payload shape:
+// {
+//   difficulty, totalQuestions, correctCount, wrongCount,
+//   score, accuracy, pointsEarned, timeTaken,
+//   attempts: [{ questionId, animalName, type, difficulty, correct, timeTaken }]
+
+// POST /api/quiz/complete — save full quiz session + all attempts in one call
+export const saveQuizComplete = async (payload) => {
+    const res = await fetch(`${BASE_URL}/quiz/complete`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to save quiz');
+    return data;
+};

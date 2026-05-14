@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './QuizScreen.css';
-import { getQuestionsByDifficulty } from '../../../services/alphabetService'
+import { getQuestionsByDifficulty } from '../../../services/alphabetService';
 
 const QUESTION_COUNTS = { easy: 5, medium: 10, hard: 15 };
 
@@ -9,58 +9,13 @@ export default function QuizScreen({ difficulty, onComplete }) {
     const [answers, setAnswers] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [startTime] = useState(Date.now()); // track total quiz time
 
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
-                // const data = await getQuestionsByDifficulty(difficulty); // uncomment when backend ready
-                const data = [
-                    {
-                        _id: '1',
-                        questionText: 'Which animal belongs to the genus Loxodonta?',
-                        options: ['Wolf', 'Elephant', 'Jaguar'],
-                        correctAnswer: 'Elephant',
-                        type: 'sci',
-                        difficulty: 'hard',
-                        animalName: 'Elephant',
-                    },
-                    {
-                        _id: '2',
-                        questionText: 'What do alligators primarily eat?',
-                        options: ['Grass', 'Fish', 'Berries'],
-                        correctAnswer: 'Fish',
-                        type: 'fact',
-                        difficulty: 'easy',
-                        animalName: 'Alligator',
-                    },
-                    {
-                        _id: '3',
-                        questionText: 'Where do penguins naturally live?',
-                        options: ['Arctic', 'Antarctic', 'Tropics'],
-                        correctAnswer: 'Antarctic',
-                        type: 'habitat',
-                        difficulty: 'easy',
-                        animalName: 'Penguin',
-                    },
-                    {
-                        _id: '4',
-                        questionText: 'Which animal is the fastest on land?',
-                        options: ['Lion', 'Cheetah', 'Horse'],
-                        correctAnswer: 'Cheetah',
-                        type: 'funfact',
-                        difficulty: 'easy',
-                        animalName: 'Cheetah',
-                    },
-                    {
-                        _id: '5',
-                        questionText: 'What is a group of wolves called?',
-                        options: ['Herd', 'Pack', 'Flock'],
-                        correctAnswer: 'Pack',
-                        type: 'fact',
-                        difficulty: 'easy',
-                        animalName: 'Wolf',
-                    },
-                ];
+                const data = await getQuestionsByDifficulty(difficulty);
+                console.log('RAW QUESTIONS:', data);
                 const shuffled = data.sort(() => Math.random() - 0.5);
                 setQuestions(shuffled.slice(0, QUESTION_COUNTS[difficulty]));
             } catch (err) {
@@ -82,26 +37,40 @@ export default function QuizScreen({ difficulty, onComplete }) {
             return;
         }
 
-        const results = questions.map((q) => ({
-            questionId: q._id,
-            animalName: q.animalName,
-            type: q.type,
-            difficulty: q.difficulty,
-            selectedAnswer: answers[q._id],
-            correctAnswer: q.correctAnswer,
-            isCorrect: answers[q._id] === q.correctAnswer,
-        }));
+        const timeTaken = Math.round((Date.now() - startTime) / 1000); // seconds
 
-        const correct = results.filter((r) => r.isCorrect).length;
-        const wrong = results.length - correct;
+        const results = questions.map((q) => {
+            // Support both index-based correctAnswer (Number) and string-based
+            const correctAnswerText =
+                typeof q.correctAnswer === 'number'
+                    ? q.choices?.[q.correctAnswer] ?? q.correctAnswer
+                    : q.correctAnswer;
+
+            const selectedAnswer = answers[q._id];
+
+            return {
+                questionId:     q._id,
+                animalName:     q.animalName,
+                type:           q.type,
+                difficulty:     q.difficulty,
+                selectedAnswer,
+                correctAnswer:  correctAnswerText,
+                isCorrect:      selectedAnswer === correctAnswerText,
+                timeTaken:      null, // per-question timing not tracked; total is in parent
+            };
+        });
+
+        const correct  = results.filter((r) => r.isCorrect).length;
+        const wrong    = results.length - correct;
         const accuracy = Math.round((correct / results.length) * 100);
 
         onComplete({
             difficulty,
             totalQuestions: results.length,
             correctAnswers: correct,
-            wrongAnswers: wrong,
+            wrongAnswers:   wrong,
             accuracy,
+            timeTaken,
             attempts: results,
         });
     };
@@ -109,7 +78,7 @@ export default function QuizScreen({ difficulty, onComplete }) {
     const answeredCount = Object.keys(answers).length;
 
     if (loading) return <div className="quiz-loading">Loading questions... 🐾</div>;
-    if (error) return <div className="quiz-loading">{error}</div>;
+    if (error)   return <div className="quiz-loading">{error}</div>;
 
     return (
         <div className="quiz-wrapper">
@@ -133,31 +102,38 @@ export default function QuizScreen({ difficulty, onComplete }) {
             </div>
 
             <div className="quiz-questionList">
-                {questions.map((q, index) => (
-                    <div
-                        key={q._id}
-                        className={`quiz-questionCard ${answers[q._id] ? 'quiz-answered' : ''}`}
-                    >
-                        <div className="quiz-questionHeader">
-                            <span className="quiz-qNumber">Q{index + 1}</span>
-                            <span className="quiz-typeBadge">{q.type}</span>
-                        </div>
+                {questions.map((q, index) => {
+                    // Support both choices[] (new model) and options[] (old demo data)
+                    const optionList = q.choices ?? q.options ?? [];
 
-                        <p className="quiz-questionText">{q.questionText}</p>
+                    return (
+                        <div
+                            key={q._id}
+                            className={`quiz-questionCard ${answers[q._id] ? 'quiz-answered' : ''}`}
+                        >
+                            <div className="quiz-questionHeader">
+                                <span className="quiz-qNumber">Q{index + 1}</span>
+                                <span className="quiz-typeBadge">{q.type}</span>
+                            </div>
 
-                        <div className="quiz-options">
-                            {q.options.map((option) => (
-                                <button
-                                    key={option}
-                                    className={`quiz-optionBtn ${answers[q._id] === option ? 'quiz-selected' : ''}`}
-                                    onClick={() => handleAnswer(q._id, option)}
-                                >
-                                    {option}
-                                </button>
-                            ))}
+                            <p className="quiz-questionText">
+                                {q.questionText ?? q.question}
+                            </p>
+
+                            <div className="quiz-options">
+                                {optionList.map((option) => (
+                                    <button
+                                        key={option}
+                                        className={`quiz-optionBtn ${answers[q._id] === option ? 'quiz-selected' : ''}`}
+                                        onClick={() => handleAnswer(q._id, option)}
+                                    >
+                                        {option}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <div className="quiz-footer">

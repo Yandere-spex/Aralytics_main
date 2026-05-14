@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getTeacherDashboard } from '../../../services/teacherService';
+import { getTeacherDashboard, getClassCode } from '../../../services/teacherService';
 import './TeacherDashboard.css';
+
+// ── Sub-components ────────────────────────────────────────────────
 
 const StatCard = ({ icon, label, value, sub, color }) => (
     <div className="td-stat-card" style={{ '--accent': color }}>
@@ -26,10 +28,10 @@ const ProgressBar = ({ label, value, max, color }) => {
 
 const StatusBadge = ({ status }) => {
     const map = {
-        'on-track':        { label: 'On track', cls: 'badge-green'  },
-        'needs-attention': { label: 'Watch',     cls: 'badge-amber'  },
-        'at-risk':         { label: 'At risk',   cls: 'badge-red'    },
-        'inactive':        { label: 'Inactive',  cls: 'badge-gray'   },
+        'on-track':        { label: 'On track', cls: 'badge-green' },
+        'needs-attention': { label: 'Watch',     cls: 'badge-amber' },
+        'at-risk':         { label: 'At risk',   cls: 'badge-red'   },
+        'inactive':        { label: 'Inactive',  cls: 'badge-gray'  },
     };
     const { label, cls } = map[status] || map['inactive'];
     return <span className={`td-badge ${cls}`}>{label}</span>;
@@ -52,16 +54,71 @@ const Sparkline = ({ data, valueKey, color }) => {
     );
 };
 
+// ── Milestone badge strip ─────────────────────────────────────────
+const MilestoneBadges = ({ milestones }) => (
+    <div className="td-milestone-row">
+        {milestones.map(m => (
+            <div
+                key={m.id}
+                className={`td-milestone ${m.achieved ? 'achieved' : 'locked'}`}
+                title={m.label}
+            >
+                <span className="td-milestone-icon">{m.icon}</span>
+                <span className="td-milestone-label">{m.label}</span>
+            </div>
+        ))}
+    </div>
+);
+
+// ── Class Code Panel ──────────────────────────────────────────────
+const ClassCodePanel = ({ code }) => {
+    const [copied, setCopied] = useState(false);
+
+    const copy = () => {
+        navigator.clipboard.writeText(code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className="td-code-panel">
+            <div className="td-code-label">
+                <i className="fa-solid fa-key"></i> Class Code
+            </div>
+            <div className="td-code-display">{code}</div>
+            <button className="td-code-copy" onClick={copy}>
+                <i className={`fa-solid fa-${copied ? 'check' : 'copy'}`}></i>
+                {copied ? 'Copied!' : 'Copy'}
+            </button>
+            <p className="td-code-hint">Share this code with students so they can join your class.</p>
+        </div>
+    );
+};
+
+// ── Format learning time ──────────────────────────────────────────
+const formatTime = (mins) => {
+    if (mins < 60) return `${mins}m`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+};
+
+// ── Main component ────────────────────────────────────────────────
 export default function TeacherDashboard() {
     const [data, setData]           = useState(null);
+    const [classCode, setClassCode] = useState(null);
     const [loading, setLoading]     = useState(true);
     const [error, setError]         = useState(null);
     const [activeTab, setActiveTab] = useState('overview');
     const [filter, setFilter]       = useState('all');
+    const [expandedStudent, setExpandedStudent] = useState(null);
 
     useEffect(() => {
-        getTeacherDashboard()
-            .then(setData)
+        Promise.all([getTeacherDashboard(), getClassCode()])
+            .then(([dashData, code]) => {
+                setData(dashData);
+                setClassCode(code);
+            })
             .catch(() => setError('Failed to load dashboard.'))
             .finally(() => setLoading(false));
     }, []);
@@ -106,17 +163,22 @@ export default function TeacherDashboard() {
                     </h1>
                     <p className="td-sub">Class overview · Aralytics</p>
                 </div>
+                {classCode && <ClassCodePanel code={classCode} />}
             </div>
 
             {/* Tabs */}
             <div className="td-tabs">
-                {['overview', 'students', 'leaderboard'].map(tab => (
+                {['overview', 'students', 'milestones', 'leaderboard'].map(tab => (
                     <button
                         key={tab}
                         className={`td-tab ${activeTab === tab ? 'active' : ''}`}
                         onClick={() => setActiveTab(tab)}
                     >
-                        <i className={`fa-solid fa-${tab === 'overview' ? 'gauge' : tab === 'students' ? 'users' : 'trophy'}`}></i>
+                        <i className={`fa-solid fa-${
+                            tab === 'overview'    ? 'gauge'   :
+                            tab === 'students'   ? 'users'   :
+                            tab === 'milestones' ? 'star'    : 'trophy'
+                        }`}></i>
                         {tab.charAt(0).toUpperCase() + tab.slice(1)}
                     </button>
                 ))}
@@ -126,10 +188,11 @@ export default function TeacherDashboard() {
             {activeTab === 'overview' && (
                 <>
                     <div className="td-stats-grid">
-                        <StatCard icon="fa-users"       label="Total Students"    value={summary.totalStudents}              color="#7F77DD" />
-                        <StatCard icon="fa-bolt"        label="Avg Reading Speed" value={`${summary.classAvgWPM} WPM`}       color="#1D9E75" sub="words per minute" />
-                        <StatCard icon="fa-brain"       label="Avg Comprehension" value={`${summary.classAvgComprehension}%`} color="#f5a623" />
-                        <StatCard icon="fa-star"        label="Avg Quiz Score"    value={`${summary.classAvgQuizScore}%`}     color="#378ADD" />
+                        <StatCard icon="fa-users"       label="Total Students"    value={summary.totalStudents}                        color="#7F77DD" />
+                        <StatCard icon="fa-bolt"        label="Avg Reading Speed" value={`${summary.classAvgWPM} WPM`}                 color="#1D9E75" sub="words per minute" />
+                        <StatCard icon="fa-brain"       label="Avg Comprehension" value={`${summary.classAvgComprehension}%`}           color="#f5a623" />
+                        <StatCard icon="fa-star"        label="Avg Quiz Score"    value={`${summary.classAvgQuizScore}%`}               color="#378ADD" />
+                        <StatCard icon="fa-clock"       label="Total Learn Time"  value={formatTime(summary.totalLearningTime)}         color="#e879f9" sub="across all students" />
                     </div>
 
                     <div className="td-two-col">
@@ -185,11 +248,11 @@ export default function TeacherDashboard() {
                 <div className="td-panel">
                     <div className="td-filters">
                         {[
-                            { key: 'all',              label: `All (${students.length})` },
-                            { key: 'on-track',         label: 'On track' },
-                            { key: 'needs-attention',  label: 'Watch' },
-                            { key: 'at-risk',          label: 'At risk' },
-                            { key: 'inactive',         label: 'Inactive' },
+                            { key: 'all',             label: `All (${students.length})` },
+                            { key: 'on-track',        label: 'On track' },
+                            { key: 'needs-attention', label: 'Watch' },
+                            { key: 'at-risk',         label: 'At risk' },
+                            { key: 'inactive',        label: 'Inactive' },
                         ].map(f => (
                             <button
                                 key={f.key}
@@ -208,23 +271,66 @@ export default function TeacherDashboard() {
                         <span className="td-col">Comprehension</span>
                         <span className="td-col">Quiz avg</span>
                         <span className="td-col">Stories</span>
+                        <span className="td-col">Learn Time</span>
                         <span className="td-col">Status</span>
                     </div>
 
                     {filteredStudents.length === 0
                         ? <p className="td-no-data" style={{ padding: '1rem 0' }}>No students in this category.</p>
                         : filteredStudents.map((s, i) => (
-                            <div key={i} className="td-roster-row">
-                                <div className="td-avatar">{initials(s.name)}</div>
-                                <div style={{ flex: 1 }}>
-                                    <div className="td-student-name">{s.name}</div>
-                                    <div className="td-student-meta">{s.email}</div>
+                            <div key={i}>
+                                <div
+                                    className="td-roster-row"
+                                    onClick={() => setExpandedStudent(expandedStudent === i ? null : i)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <div className="td-avatar">{initials(s.name)}</div>
+                                    <div style={{ flex: 1 }}>
+                                        <div className="td-student-name">{s.name}</div>
+                                        <div className="td-student-meta">{s.email}</div>
+                                    </div>
+                                    <span className="td-col">{s.avgWPM ?? '—'}</span>
+                                    <span className="td-col">{s.avgComprehension != null ? `${s.avgComprehension}%` : '—'}</span>
+                                    <span className="td-col">{s.avgQuizScore != null ? `${s.avgQuizScore}%` : '—'}</span>
+                                    <span className="td-col">{s.totalStories}</span>
+                                    <span className="td-col">{formatTime(s.learningTime)}</span>
+                                    <span className="td-col"><StatusBadge status={s.status} /></span>
                                 </div>
-                                <span className="td-col">{s.avgWPM ?? '—'}</span>
-                                <span className="td-col">{s.avgComprehension != null ? `${s.avgComprehension}%` : '—'}</span>
-                                <span className="td-col">{s.avgQuizScore != null ? `${s.avgQuizScore}%` : '—'}</span>
-                                <span className="td-col">{s.totalStories}</span>
-                                <span className="td-col"><StatusBadge status={s.status} /></span>
+
+                                {/* Expanded milestone row */}
+                                {expandedStudent === i && (
+                                    <div className="td-student-expand">
+                                        <p className="td-expand-title">
+                                            🏅 Milestones — {s.achievedCount}/{s.milestones.length} achieved
+                                        </p>
+                                        <MilestoneBadges milestones={s.milestones} />
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    }
+                </div>
+            )}
+
+            {/* ── MILESTONES ────────────────────────────────────── */}
+            {activeTab === 'milestones' && (
+                <div className="td-panel">
+                    <h3 className="td-panel-title"><i className="fa-solid fa-star"></i> Student Milestones</h3>
+                    {students.length === 0
+                        ? <p className="td-no-data">No students enrolled yet.</p>
+                        : students.map((s, i) => (
+                            <div key={i} className="td-milestone-student">
+                                <div className="td-milestone-student-header">
+                                    <div className="td-avatar sm">{initials(s.name)}</div>
+                                    <span className="td-student-name">{s.name}</span>
+                                    <span className="td-badge badge-purple">
+                                        {s.achievedCount}/{s.milestones.length} achieved
+                                    </span>
+                                    <span className="td-badge badge-pink">
+                                        <i className="fa-solid fa-clock"></i> {formatTime(s.learningTime)}
+                                    </span>
+                                </div>
+                                <MilestoneBadges milestones={s.milestones} />
                             </div>
                         ))
                     }
@@ -233,28 +339,48 @@ export default function TeacherDashboard() {
 
             {/* ── LEADERBOARD ───────────────────────────────────── */}
             {activeTab === 'leaderboard' && (
-                <div className="td-two-col">
+                <div className="td-three-col">
                     <div className="td-panel">
                         <h3 className="td-panel-title"><i className="fa-solid fa-book-open"></i> Most stories read</h3>
-                        {topPerformers.readers.map((s, i) => (
-                            <div key={i} className="td-leader-row">
-                                <span className="td-rank">#{i + 1}</span>
-                                <div className="td-avatar sm">{initials(s.name)}</div>
-                                <span style={{ flex: 1 }}>{s.name}</span>
-                                <span className="td-badge badge-purple">{s.totalStories} stories</span>
-                            </div>
-                        ))}
+                        {topPerformers.readers.length === 0
+                            ? <p className="td-no-data">No data yet.</p>
+                            : topPerformers.readers.map((s, i) => (
+                                <div key={i} className="td-leader-row">
+                                    <span className="td-rank">#{i + 1}</span>
+                                    <div className="td-avatar sm">{initials(s.name)}</div>
+                                    <span style={{ flex: 1 }}>{s.name}</span>
+                                    <span className="td-badge badge-purple">{s.totalStories} stories</span>
+                                </div>
+                            ))
+                        }
                     </div>
                     <div className="td-panel">
                         <h3 className="td-panel-title"><i className="fa-solid fa-trophy"></i> Highest quiz average</h3>
-                        {topPerformers.quizzers.map((s, i) => (
-                            <div key={i} className="td-leader-row">
-                                <span className="td-rank">#{i + 1}</span>
-                                <div className="td-avatar sm" style={{ background: '#0d2b1a', color: '#34d399' }}>{initials(s.name)}</div>
-                                <span style={{ flex: 1 }}>{s.name}</span>
-                                <span className="td-badge badge-green">{s.avgQuizScore}%</span>
-                            </div>
-                        ))}
+                        {topPerformers.quizzers.length === 0
+                            ? <p className="td-no-data">No data yet.</p>
+                            : topPerformers.quizzers.map((s, i) => (
+                                <div key={i} className="td-leader-row">
+                                    <span className="td-rank">#{i + 1}</span>
+                                    <div className="td-avatar sm" style={{ background: '#0d2b1a', color: '#34d399' }}>{initials(s.name)}</div>
+                                    <span style={{ flex: 1 }}>{s.name}</span>
+                                    <span className="td-badge badge-green">{s.avgQuizScore}%</span>
+                                </div>
+                            ))
+                        }
+                    </div>
+                    <div className="td-panel">
+                        <h3 className="td-panel-title"><i className="fa-solid fa-clock"></i> Most time learning</h3>
+                        {topPerformers.timeLearners.length === 0
+                            ? <p className="td-no-data">No data yet.</p>
+                            : topPerformers.timeLearners.map((s, i) => (
+                                <div key={i} className="td-leader-row">
+                                    <span className="td-rank">#{i + 1}</span>
+                                    <div className="td-avatar sm" style={{ background: '#2d1b4e', color: '#e879f9' }}>{initials(s.name)}</div>
+                                    <span style={{ flex: 1 }}>{s.name}</span>
+                                    <span className="td-badge badge-pink">{formatTime(s.learningTime)}</span>
+                                </div>
+                            ))
+                        }
                     </div>
                 </div>
             )}

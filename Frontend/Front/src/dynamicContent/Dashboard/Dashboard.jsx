@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getDashboard } from '../../services/Dashboardservice.js';
+import { getDashboard } from '../../services/dashboardService.js';
 import './Dashboard.css';
 
 
@@ -69,7 +69,9 @@ const RecentReadingRow = ({ title, wpm, percentage, completedAt }) => (
 const RecentQuizRow = ({ item }) => (
     <div className="recent-row">
         <div className="recent-info">
-            <div className="recent-title">{item.correctCount}/{item.totalQuestions} correct · {item.mode} mode</div>
+            <div className="recent-title">
+                {item.correctCount}/{item.totalQuestions} correct · {item.mode ?? item.difficulty} mode
+            </div>
             <div className="recent-date">{new Date(item.completedAt).toLocaleDateString()}</div>
         </div>
         <div className="recent-badges">
@@ -104,12 +106,11 @@ const DonutRing = ({ percentage, color, size = 100 }) => {
 
 // ── MAIN DASHBOARD ────────────────────────────────────────────────
 export default function Dashboard() {
-    /*const [data, setData]           = useState(null);
+    const [data, setData]           = useState(null);
     const [loading, setLoading]     = useState(true);
     const [error, setError]         = useState(null);
     const [activeTab, setActiveTab] = useState('reading');
 
-    // ✅ Single useEffect only
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
@@ -145,81 +146,14 @@ export default function Dashboard() {
     );
 
     const { reading, quiz } = data;
-*/
-const [activeTab, setActiveTab] = useState('reading');
 
-    // TEMPORARY DEMO DATA - remove when backend is ready
-    const data = {
-        reading: {
-            totalStoriesRead: 12,
-            totalWordsRead: 18450,
-            avgWPM: 187,
-            avgComprehension: 74,
-            bestWPM: 245,
-            bestComprehension: 95,
-            speedDistribution: { slow: 2, normal: 7, fast: 3 },
-            comprehensionDistribution: { excellent: 5, good: 4, needsWork: 3 },
-            trend: [
-                { session: 1, wpm: 140, comprehension: 60 },
-                { session: 2, wpm: 155, comprehension: 65 },
-                { session: 3, wpm: 170, comprehension: 70 },
-                { session: 4, wpm: 187, comprehension: 74 },
-                { session: 5, wpm: 210, comprehension: 80 },
-                { session: 6, wpm: 245, comprehension: 95 },
-            ],
-            recentStories: [
-                { storyTitle: 'The Lion and the Mouse', wpm: 210, percentage: 85, completedAt: '2026-05-03T10:00:00Z' },
-                { storyTitle: 'Journey to the Ocean',   wpm: 187, percentage: 74, completedAt: '2026-05-02T09:00:00Z' },
-                { storyTitle: 'The Clever Fox',         wpm: 165, percentage: 60, completedAt: '2026-05-01T08:00:00Z' },
-            ],
-        },
-        quiz: {
-            totalSessions: 8,
-            avgScore: 72,
-            bestScore: 95,
-            totalQuestionsAnswered: 95,
-            totalCorrect: 68,
-            totalWrong: 27,
-            avgAccuracy: 72,
-            totalPoints: 3400,
-            avgTimeTaken: 145,
-            streakCurrent: 3,
-            weakestType: 'sci',
-            difficultyBreakdown: {
-                easy:   { accuracy: 90 },
-                medium: { accuracy: 70 },
-                hard:   { accuracy: 48 },
-            },
-            typeBreakdown: {
-                sci:     { accuracy: 48 },
-                fact:    { accuracy: 82 },
-                funfact: { accuracy: 76 },
-                habitat: { accuracy: 65 },
-            },
-            trend: [
-                { session: 1, score: 55, accuracy: 55 },
-                { session: 2, score: 60, accuracy: 60 },
-                { session: 3, score: 68, accuracy: 68 },
-                { session: 4, score: 72, accuracy: 72 },
-                { session: 5, score: 80, accuracy: 80 },
-                { session: 6, score: 95, accuracy: 95 },
-            ],
-            recentSessions: [
-                { correctCount: 9, totalQuestions: 10, mode: 'easy',   score: 90, pointsEarned: 450, completedAt: '2026-05-03T11:00:00Z' },
-                { correctCount: 7, totalQuestions: 10, mode: 'medium', score: 70, pointsEarned: 350, completedAt: '2026-05-02T10:00:00Z' },
-                { correctCount: 5, totalQuestions: 15, mode: 'hard',   score: 33, pointsEarned: 165, completedAt: '2026-05-01T09:00:00Z' },
-            ],
-        },
-    };
-
-    const { reading, quiz } = data;
     return (
         <div className="dashboard">
 
             {/* HEADER */}
             <div className="dashboard-header">
-                <h1> My Dashboard</h1>
-                <p className="dashboard-sub">Track your Reading (WPS) and Comprehension</p>
+                <h1>My Dashboard</h1>
+                <p className="dashboard-sub">Track your Reading (WPM) and Comprehension</p>
             </div>
 
             {/* TABS */}
@@ -228,13 +162,13 @@ const [activeTab, setActiveTab] = useState('reading');
                     className={`tab-btn ${activeTab === 'reading' ? 'active' : ''}`}
                     onClick={() => setActiveTab('reading')}
                 >
-                    WPS and Comprehension
+                    WPM and Comprehension
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`}
                     onClick={() => setActiveTab('quiz')}
                 >
-                    Animal Knowdlege
+                    Animal Knowledge
                 </button>
             </div>
 
@@ -243,7 +177,7 @@ const [activeTab, setActiveTab] = useState('reading');
             ══════════════════════════════════════ */}
             {activeTab === 'reading' && (
                 <div className="tab-content">
-                    {reading.totalStoriesRead === 0 ? (
+                    {!reading || reading.totalStoriesRead === 0 ? (
                         <div className="empty-state">
                             <span>📖</span>
                             <p>No stories read yet. Start your first story!</p>
@@ -277,16 +211,16 @@ const [activeTab, setActiveTab] = useState('reading');
 
                             <div className="section-title">Reading Speed Distribution</div>
                             <div className="dist-section">
-                                <ProgressBar label="🐢 Slow (< 150 WPM)"     value={reading.speedDistribution.slow}   max={reading.totalStoriesRead} color="#ff6b6b" />
-                                <ProgressBar label="✅ Normal (150–250 WPM)"  value={reading.speedDistribution.normal} max={reading.totalStoriesRead} color="#34d399" />
-                                <ProgressBar label="⚡ Fast (> 250 WPM)"      value={reading.speedDistribution.fast}   max={reading.totalStoriesRead} color="#a78bfa" />
+                                <ProgressBar label="🐢 Slow (< 150 WPM)"    value={reading.speedDistribution?.slow   ?? 0} max={reading.totalStoriesRead} color="#ff6b6b" />
+                                <ProgressBar label="✅ Normal (150–250 WPM)" value={reading.speedDistribution?.normal ?? 0} max={reading.totalStoriesRead} color="#34d399" />
+                                <ProgressBar label="⚡ Fast (> 250 WPM)"     value={reading.speedDistribution?.fast   ?? 0} max={reading.totalStoriesRead} color="#a78bfa" />
                             </div>
 
                             <div className="section-title">Comprehension Distribution</div>
                             <div className="dist-section">
-                                <ProgressBar label="🌟 Excellent (≥ 80%)"  value={reading.comprehensionDistribution.excellent}  max={reading.totalStoriesRead} color="#34d399" />
-                                <ProgressBar label="👍 Good (60–79%)"      value={reading.comprehensionDistribution.good}       max={reading.totalStoriesRead} color="#f5a623" />
-                                <ProgressBar label="📝 Needs Work (< 60%)" value={reading.comprehensionDistribution.needsWork}  max={reading.totalStoriesRead} color="#ff6b6b" />
+                                <ProgressBar label="🌟 Excellent (≥ 80%)"  value={reading.comprehensionDistribution?.excellent  ?? 0} max={reading.totalStoriesRead} color="#34d399" />
+                                <ProgressBar label="👍 Good (60–79%)"      value={reading.comprehensionDistribution?.good       ?? 0} max={reading.totalStoriesRead} color="#f5a623" />
+                                <ProgressBar label="📝 Needs Work (< 60%)" value={reading.comprehensionDistribution?.needsWork  ?? 0} max={reading.totalStoriesRead} color="#ff6b6b" />
                             </div>
 
                             {reading.trend && reading.trend.length > 1 && (
@@ -315,7 +249,7 @@ const [activeTab, setActiveTab] = useState('reading');
 
                             <div className="section-title">Recent Stories</div>
                             <div className="recent-list">
-                                {reading.recentStories.map((s, i) => (
+                                {reading.recentStories?.map((s, i) => (
                                     <RecentReadingRow
                                         key={i}
                                         title={s.storyTitle}
@@ -331,103 +265,103 @@ const [activeTab, setActiveTab] = useState('reading');
             )}
 
             {/* ══════════════════════════════════════
-    QUIZ TAB
-══════════════════════════════════════ */}
-{activeTab === 'quiz' && (
-    <div className="tab-content">
-        {quiz.totalSessions === 0 ? (
-            <div className="empty-state">
-                <span>🐾</span>
-                <p>No quizzes taken yet. Try the Animal Quiz!</p>
-            </div>
-        ) : (
-            <>
-                {/* STAT CARDS */}
-                <div className="stats-grid">
-                    <StatCard icon="🎯" label="Quizzes Taken"         value={quiz.totalSessions}                  color="#f5a623" />
-                    <StatCard icon="📊" label="Avg Accuracy"          value={`${quiz.avgScore}%`}                 color="#4ecdc4" />
-                    <StatCard icon="🏆" label="Best Accuracy"         value={`${quiz.bestScore}%`}                color="#34d399" />
-                    <StatCard icon="❓" label="Questions Answered"    value={quiz.totalQuestionsAnswered}         color="#a78bfa" />
-                    <StatCard icon="✅" label="Total Correct"         value={quiz.totalCorrect}                   color="#34d399" />
-                    <StatCard icon="❌" label="Total Wrong"           value={quiz.totalWrong}                     color="#ff6b6b" />
-                    <StatCard icon="⚡" label="Avg Accuracy"          value={`${quiz.avgAccuracy}%`}              color="#4ecdc4" />
-                    <StatCard icon="💎" label="Total Points"          value={quiz.totalPoints?.toLocaleString()}  color="#f5a623" />
-                </div>
-
-                {/* OVERALL PERFORMANCE */}
-                <div className="section-title">Overall Performance</div>
-                <div className="donuts-row">
-                    <div className="donut-wrap">
-                        <DonutRing percentage={quiz.avgScore}  color="#4ecdc4" />
-                        <div className="donut-label">Avg Score</div>
-                    </div>
-                    <div className="donut-wrap">
-                        <DonutRing percentage={quiz.bestScore} color="#34d399" />
-                        <div className="donut-label">Best Score</div>
-                    </div>
-                    <div className="donut-wrap">
-                        <DonutRing percentage={Math.min(Math.round((quiz.totalSessions / 20) * 100), 100)} color="#f5a623" />
-                        <div className="donut-label">Quiz Goal</div>
-                        <div className="donut-sub">{quiz.totalSessions} / 20</div>
-                    </div>
-                </div>
-
-                {/* ACCURACY BY DIFFICULTY */}
-                <div className="section-title">Accuracy by Difficulty</div>
-                <div className="dist-section">
-                    <ProgressBar label="🌿 Easy"   value={quiz.difficultyBreakdown?.easy?.accuracy   ?? 0} max={100} color="#4ade80" />
-                    <ProgressBar label="🦁 Medium" value={quiz.difficultyBreakdown?.medium?.accuracy ?? 0} max={100} color="#facc15" />
-                    <ProgressBar label="🦅 Hard"   value={quiz.difficultyBreakdown?.hard?.accuracy   ?? 0} max={100} color="#f87171" />
-                </div>
-
-                {/* ACCURACY BY TYPE */}
-                <div className="section-title">Accuracy by Question Type</div>
-                <div className="dist-section">
-                    <ProgressBar label="🔬 Sci"      value={quiz.typeBreakdown?.sci?.accuracy      ?? 0} max={100} color="#22d3ee" />
-                    <ProgressBar label="📖 Fact"     value={quiz.typeBreakdown?.fact?.accuracy     ?? 0} max={100} color="#a78bfa" />
-                    <ProgressBar label="🎉 Fun Fact" value={quiz.typeBreakdown?.funfact?.accuracy  ?? 0} max={100} color="#f5a623" />
-                    <ProgressBar label="🌍 Habitat"  value={quiz.typeBreakdown?.habitat?.accuracy  ?? 0} max={100} color="#34d399" />
-                </div>
-
-                {/* SCORE TREND */}
-                {quiz.trend && quiz.trend.length > 1 && (
-                    <>
-                        <div className="section-title">Score Trend</div>
-                        <div className="charts-row">
-                            <TrendChart data={quiz.trend} valueKey="score"    color="#4ecdc4" label="Score % per Session" />
-                            <TrendChart data={quiz.trend} valueKey="accuracy" color="#f5a623" label="Accuracy per Session" />
+                QUIZ TAB
+            ══════════════════════════════════════ */}
+            {activeTab === 'quiz' && (
+                <div className="tab-content">
+                    {!quiz || quiz.totalSessions === 0 ? (
+                        <div className="empty-state">
+                            <span>🐾</span>
+                            <p>No quizzes taken yet. Try the Animal Quiz!</p>
                         </div>
-                    </>
-                )}
+                    ) : (
+                        <>
+                            {/* STAT CARDS */}
+                            <div className="stats-grid">
+                                <StatCard icon="🎯" label="Quizzes Taken"      value={quiz.totalSessions}                 color="#f5a623" />
+                                <StatCard icon="📊" label="Avg Score"          value={`${quiz.avgScore}%`}                color="#4ecdc4" />
+                                <StatCard icon="🏆" label="Best Score"         value={`${quiz.bestScore}%`}               color="#34d399" />
+                                <StatCard icon="❓" label="Questions Answered" value={quiz.totalQuestionsAnswered}        color="#a78bfa" />
+                                <StatCard icon="✅" label="Total Correct"      value={quiz.totalCorrect}                  color="#34d399" />
+                                <StatCard icon="❌" label="Total Wrong"        value={quiz.totalWrong}                    color="#ff6b6b" />
+                                <StatCard icon="⚡" label="Avg Accuracy"       value={`${quiz.avgAccuracy}%`}             color="#4ecdc4" />
+                                <StatCard icon="💎" label="Total Points"       value={quiz.totalPoints?.toLocaleString()} color="#f5a623" />
+                            </div>
 
-                {/* MORE STATS */}
-                <div className="section-title">More Stats</div>
-                <div className="dist-section">
-                    <div className="info-row">
-                        <span>⏱ Avg Time Per Quiz</span>
-                        <span>{quiz.avgTimeTaken}s</span>
-                    </div>
-                    <div className="info-row">
-                        <span>🔥 Current Streak</span>
-                        <span>{quiz.streakCurrent} day{quiz.streakCurrent !== 1 ? 's' : ''}</span>
-                    </div>
-                    <div className="info-row">
-                        <span>🐾 Weakest Animal Type</span>
-                        <span>{quiz.weakestType ?? 'N/A'}</span>
-                    </div>
-                </div>
+                            {/* OVERALL PERFORMANCE */}
+                            <div className="section-title">Overall Performance</div>
+                            <div className="donuts-row">
+                                <div className="donut-wrap">
+                                    <DonutRing percentage={quiz.avgScore}  color="#4ecdc4" />
+                                    <div className="donut-label">Avg Score</div>
+                                </div>
+                                <div className="donut-wrap">
+                                    <DonutRing percentage={quiz.bestScore} color="#34d399" />
+                                    <div className="donut-label">Best Score</div>
+                                </div>
+                                <div className="donut-wrap">
+                                    <DonutRing percentage={Math.min(Math.round((quiz.totalSessions / 20) * 100), 100)} color="#f5a623" />
+                                    <div className="donut-label">Quiz Goal</div>
+                                    <div className="donut-sub">{quiz.totalSessions} / 20</div>
+                                </div>
+                            </div>
 
-                {/* RECENT QUIZZES */}
-                <div className="section-title">Recent Quizzes</div>
-                <div className="recent-list">
-                    {quiz.recentSessions.map((s, i) => (
-                        <RecentQuizRow key={i} item={s} />
-                    ))}
+                            {/* ACCURACY BY DIFFICULTY */}
+                            <div className="section-title">Accuracy by Difficulty</div>
+                            <div className="dist-section">
+                                <ProgressBar label="🌿 Easy"   value={quiz.difficultyBreakdown?.easy?.accuracy   ?? 0} max={100} color="#4ade80" />
+                                <ProgressBar label="🦁 Medium" value={quiz.difficultyBreakdown?.medium?.accuracy ?? 0} max={100} color="#facc15" />
+                                <ProgressBar label="🦅 Hard"   value={quiz.difficultyBreakdown?.hard?.accuracy   ?? 0} max={100} color="#f87171" />
+                            </div>
+
+                            {/* ACCURACY BY TYPE */}
+                            <div className="section-title">Accuracy by Question Type</div>
+                            <div className="dist-section">
+                                <ProgressBar label="🔬 Sci"      value={quiz.typeBreakdown?.sci?.accuracy     ?? 0} max={100} color="#22d3ee" />
+                                <ProgressBar label="📖 Fact"     value={quiz.typeBreakdown?.fact?.accuracy    ?? 0} max={100} color="#a78bfa" />
+                                <ProgressBar label="🎉 Fun Fact" value={quiz.typeBreakdown?.funfact?.accuracy ?? 0} max={100} color="#f5a623" />
+                                <ProgressBar label="🌍 Habitat"  value={quiz.typeBreakdown?.habitat?.accuracy ?? 0} max={100} color="#34d399" />
+                            </div>
+
+                            {/* SCORE TREND */}
+                            {quiz.trend && quiz.trend.length > 1 && (
+                                <>
+                                    <div className="section-title">Score Trend</div>
+                                    <div className="charts-row">
+                                        <TrendChart data={quiz.trend} valueKey="score"    color="#4ecdc4" label="Score % per Session" />
+                                        <TrendChart data={quiz.trend} valueKey="accuracy" color="#f5a623" label="Accuracy per Session" />
+                                    </div>
+                                </>
+                            )}
+
+                            {/* MORE STATS */}
+                            <div className="section-title">More Stats</div>
+                            <div className="dist-section">
+                                <div className="info-row">
+                                    <span>⏱ Avg Time Per Quiz</span>
+                                    <span>{quiz.avgTimeTaken}s</span>
+                                </div>
+                                <div className="info-row">
+                                    <span>🔥 Current Streak</span>
+                                    <span>{quiz.streakCurrent} day{quiz.streakCurrent !== 1 ? 's' : ''}</span>
+                                </div>
+                                <div className="info-row">
+                                    <span>🐾 Weakest Animal Type</span>
+                                    <span>{quiz.weakestType ?? 'N/A'}</span>
+                                </div>
+                            </div>
+
+                            {/* RECENT QUIZZES */}
+                            <div className="section-title">Recent Quizzes</div>
+                            <div className="recent-list">
+                                {quiz.recentSessions?.map((s, i) => (
+                                    <RecentQuizRow key={i} item={s} />
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
-            </>
-        )}
-    </div>
-)}
+            )}
 
         </div>
     );

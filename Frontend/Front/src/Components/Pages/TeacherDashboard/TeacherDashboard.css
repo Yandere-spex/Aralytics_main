@@ -1,0 +1,128 @@
+/* ── ADD THESE STYLES TO YOUR EXISTING TeacherDashboard.css ── */
+
+/* Three-col layout for leaderboard */
+.td-three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+/* Class code panel */
+.td-code-panel {
+    display:        flex;
+    flex-direction: column;
+    align-items:    flex-end;
+    gap:            0.35rem;
+}
+.td-code-label {
+    font-size:   0.75rem;
+    color:       #9ca3af;
+    font-weight: 500;
+}
+.td-code-display {
+    font-size:      1.75rem;
+    font-weight:    800;
+    letter-spacing: 0.25em;
+    color:          #e879f9;
+    background:     rgba(232, 121, 249, 0.1);
+    border:         1px solid rgba(232, 121, 249, 0.3);
+    padding:        0.25rem 0.75rem;
+    border-radius:  8px;
+}
+.td-code-copy {
+    display:       flex;
+    align-items:   center;
+    gap:           0.35rem;
+    background:    rgba(232, 121, 249, 0.15);
+    border:        1px solid rgba(232, 121, 249, 0.3);
+    color:         #e879f9;
+    padding:       0.3rem 0.75rem;
+    border-radius: 6px;
+    cursor:        pointer;
+    font-size:     0.8rem;
+    font-weight:   600;
+    transition:    background 0.2s;
+}
+.td-code-copy:hover { background: rgba(232, 121, 249, 0.25); }
+.td-code-hint {
+    font-size: 0.7rem;
+    color:     #6b7280;
+    margin:    0;
+}
+
+/* Milestone badges */
+.td-milestone-row {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       0.5rem;
+    margin-top: 0.5rem;
+}
+.td-milestone {
+    display:       flex;
+    align-items:   center;
+    gap:           0.35rem;
+    padding:       0.3rem 0.65rem;
+    border-radius: 20px;
+    font-size:     0.78rem;
+    font-weight:   600;
+    transition:    all 0.2s;
+}
+.td-milestone.achieved {
+    background: rgba(52, 211, 153, 0.15);
+    border:     1px solid rgba(52, 211, 153, 0.4);
+    color:      #34d399;
+}
+.td-milestone.locked {
+    background: rgba(75, 85, 99, 0.15);
+    border:     1px solid rgba(75, 85, 99, 0.3);
+    color:      #6b7280;
+    opacity:    0.6;
+}
+.td-milestone-icon { font-size: 1rem; }
+.td-milestone-label { font-size: 0.75rem; }
+
+/* Student expand panel */
+.td-student-expand {
+    background:    rgba(127, 119, 221, 0.05);
+    border:        1px solid rgba(127, 119, 221, 0.15);
+    border-radius: 8px;
+    padding:       0.75rem 1rem;
+    margin:        0.25rem 0 0.5rem 0;
+}
+.td-expand-title {
+    font-size:   0.8rem;
+    color:       #9ca3af;
+    margin:      0 0 0.5rem 0;
+    font-weight: 600;
+}
+
+/* Milestones tab per-student block */
+.td-milestone-student {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding:       1rem 0;
+}
+.td-milestone-student:last-child { border-bottom: none; }
+.td-milestone-student-header {
+    display:     flex;
+    align-items: center;
+    gap:         0.75rem;
+    margin-bottom: 0.6rem;
+}
+
+/* Extra badges */
+.badge-pink {
+    background: rgba(232, 121, 249, 0.15);
+    color:      #e879f9;
+    border:     1px solid rgba(232, 121, 249, 0.3);
+}
+
+/* Learning time column */
+.td-roster-header,
+.td-roster-row {
+    grid-template-columns: 36px 1fr 80px 110px 80px 70px 90px 90px;
+}
+
+@media (max-width: 900px) {
+    .td-three-col { grid-template-columns: 1fr; }
+    .td-code-panel { align-items: flex-start; }
+}

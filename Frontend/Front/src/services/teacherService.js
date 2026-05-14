@@ -20,3 +20,21 @@ export const enrollStudent = async (studentId) => {
     if (!res.ok) throw new Error('Failed to enroll student');
     return res.json();
 };
+
+export const getClassCode = async () => {
+    const res  = await fetch(`${BASE}/teacher/class-code`, { headers: authHeaders() });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to get class code');
+    return data.classCode;
+};
+
+export const enrollByCode = async (classCode) => {
+    const res  = await fetch(`${BASE}/teacher/enroll-by-code`, {
+        method:  'POST',
+        headers: authHeaders(),
+        body:    JSON.stringify({ classCode }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Invalid class code');
+    return data;
+};

@@ -73,9 +73,12 @@ export default function Sidebar({ className, data }) {
                     Alphabet <i className="fa-solid fa-a"></i>
                 </button>
 
-                <button className='navBtn' onClick={handleClicked} id='Recommendation'>
-                    Recommendation <i className="fa-regular fa-lightbulb"></i>
+                
+                <button className='navBtn' onClick={handleClicked} id='Classespage'>
+                    Classes    <i className="fa-solid fa-chalkboard-user"></i>
                 </button>
+
+
 
                 <button className='navBtn logoutBtn' onClick={handleClicked} id='Logout'>
                     Log out <i className="fa-solid fa-door-open"></i>

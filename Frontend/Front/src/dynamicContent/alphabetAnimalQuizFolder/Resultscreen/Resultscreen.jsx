@@ -1,19 +1,49 @@
 import './ResultScreen.css';
 
 const getRank = (accuracy) => {
-    if (accuracy === 100) return { label: 'Perfect!', emoji: '🏆', color: '#facc15' };
-    if (accuracy >= 80) return { label: 'Excellent!', emoji: '🦁', color: '#4ade80' };
-    if (accuracy >= 60) return { label: 'Good Job!', emoji: '🐬', color: '#22d3ee' };
-    if (accuracy >= 40) return { label: 'Keep Going!', emoji: '🐢', color: '#fb923c' };
-    return { label: 'Try Again!', emoji: '🐣', color: '#f87171' };
+    if (accuracy === 100) return { label: 'Perfect!',   emoji: '🏆', color: '#facc15' };
+    if (accuracy >= 80)   return { label: 'Excellent!', emoji: '🦁', color: '#4ade80' };
+    if (accuracy >= 60)   return { label: 'Good Job!',  emoji: '🐬', color: '#22d3ee' };
+    if (accuracy >= 40)   return { label: 'Keep Going!',emoji: '🐢', color: '#fb923c' };
+    return                       { label: 'Try Again!', emoji: '🐣', color: '#f87171' };
 };
 
-export default function ResultScreen({ difficulty, quizResults, onRetry, onBack }) {
+// Save status banner shown at top of result screen
+const SaveBanner = ({ status }) => {
+    if (status === 'idle') return null;
+
+    const config = {
+        saving: { text: '⏳ Saving your results...',       bg: '#1e3a5f', color: '#7dd3fc' },
+        saved:  { text: '✅ Results saved to your dashboard!', bg: '#14532d', color: '#4ade80' },
+        error:  { text: '⚠️ Could not save results. Your score is still shown below.', bg: '#450a0a', color: '#f87171' },
+    };
+
+    const c = config[status];
+    return (
+        <div style={{
+            background:   c.bg,
+            color:        c.color,
+            padding:      '10px 16px',
+            borderRadius: '8px',
+            marginBottom: '16px',
+            fontSize:     '0.875rem',
+            textAlign:    'center',
+            fontWeight:   500,
+        }}>
+            {c.text}
+        </div>
+    );
+};
+
+export default function ResultScreen({ difficulty, quizResults, saveStatus = 'idle', onRetry, onBack }) {
     const { totalQuestions, correctAnswers, wrongAnswers, accuracy, attempts } = quizResults;
     const rank = getRank(accuracy);
 
     return (
         <div className="result-wrapper">
+
+            <SaveBanner status={saveStatus} />
+
             <div className="result-hero">
                 <span className="result-rankEmoji">{rank.emoji}</span>
                 <h1 className="result-rankLabel" style={{ color: rank.color }}>
@@ -76,7 +106,7 @@ export default function ResultScreen({ difficulty, quizResults, onRetry, onBack 
 
             <div className="result-actions">
                 <button className="result-retryBtn" onClick={onRetry}>🔁 Try Again</button>
-                <button className="result-backBtn" onClick={onBack}>← Back to Alphabet</button>
+                <button className="result-backBtn"  onClick={onBack}>← Back to Alphabet</button>
             </div>
         </div>
     );

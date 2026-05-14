@@ -49,6 +49,6 @@ export const getQuestionsByDifficulty = async (difficulty) => {
     });
 
     const data = await response.json();
-    return data.data;
+    return data.questions;  // ← change this line only
 };
 

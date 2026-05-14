@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import Sidebar from '../../../Sidebar/Sidebar';
 import Dashboard from '../../../dynamicContent/Dashboard/Dashboard.jsx';
-import Recommendation from '../../../dynamicContent/Recommendation/Recommendation.jsx';
+import ClassesPage from '../../Pages/Classes/ClassesPage.jsx';
 import MenuButton from '../../MenuButton/MenuButton.jsx';
 import SelectedCard from '../../../dynamicContent/Read/SelectedCard/SelectedCard.jsx';
 import AlphabetGrid from '../../../dynamicContent/AlphabetGrid/AlphabetGrid.jsx';
@@ -33,8 +33,8 @@ export default function MainLayout() {
                 return <SelectedCard menuOption={activeMenu} />;
             case 'Alphabet':
                 return <AlphabetGrid />;
-            case 'Recommendation':
-                return <Recommendation />;
+            case 'Classespage':
+                return <ClassesPage />;
             default:
                 return <Dashboard />;
         }
