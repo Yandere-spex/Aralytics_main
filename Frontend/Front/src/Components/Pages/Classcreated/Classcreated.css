@@ -1,0 +1,195 @@
+.clc-wrap {
+    display:               grid;
+    grid-template-columns: 1fr 300px;
+    gap:                   1.5rem;
+    padding:               1.5rem;
+    align-items:           start;
+}
+
+/* ── Main card ── */
+.clc-main {
+    background:    #1e1e2e;
+    border:        1px solid #2a2a3e;
+    border-radius: 14px;
+    padding:       2rem;
+    display:       flex;
+    flex-direction: column;
+    align-items:   center;
+    text-align:    center;
+}
+
+.clc-success-badge {
+    width:           64px;
+    height:          64px;
+    border-radius:   50%;
+    background:      rgba(52, 211, 153, 0.12);
+    border:          2px solid rgba(52, 211, 153, 0.4);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    margin-bottom:   1rem;
+}
+.clc-success-badge i { font-size: 1.75rem; color: #34d399; }
+
+.clc-title { font-size: 1.4rem; font-weight: 700; color: #f0f0f0; margin: 0 0 0.4rem; }
+.clc-sub   { font-size: 0.875rem; color: #6b7280; margin: 0 0 1.5rem; }
+
+.clc-class-name {
+    font-size:     1.05rem;
+    font-weight:   600;
+    color:         #e5e7eb;
+    margin-bottom: 0.75rem;
+}
+
+.clc-code-label {
+    font-size:     0.75rem;
+    font-weight:   600;
+    color:         #6b7280;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.clc-code {
+    font-size:      2.5rem;
+    font-weight:    800;
+    letter-spacing: 0.2em;
+    color:          #7F77DD;
+    background:     rgba(127, 119, 221, 0.08);
+    border:         1px solid rgba(127, 119, 221, 0.25);
+    padding:        0.4rem 1.5rem;
+    border-radius:  10px;
+    font-family:    monospace;
+    margin-bottom:  1.25rem;
+}
+
+/* Code action buttons */
+.clc-code-actions {
+    display:       flex;
+    gap:           0.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.clc-btn-copy {
+    display:       flex;
+    align-items:   center;
+    gap:           7px;
+    height:        38px;
+    padding:       0 18px;
+    background:    #13131f;
+    border:        1px solid #2a2a3e;
+    border-radius: 8px;
+    color:         #ccc;
+    font-size:     0.875rem;
+    font-weight:   500;
+    cursor:        pointer;
+    transition:    all 0.2s;
+}
+.clc-btn-copy:hover  { background: #2a2a3e; }
+.clc-btn-copy.copied { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3); color: #34d399; }
+
+.clc-btn-share {
+    display:       flex;
+    align-items:   center;
+    gap:           7px;
+    height:        38px;
+    padding:       0 18px;
+    background:    #7F77DD;
+    border:        none;
+    border-radius: 8px;
+    color:         #fff;
+    font-size:     0.875rem;
+    font-weight:   600;
+    cursor:        pointer;
+    transition:    background 0.2s;
+}
+.clc-btn-share:hover { background: #534AB7; }
+
+/* ── Details strip ── */
+.clc-details {
+    display:       flex;
+    gap:           1.5rem;
+    background:    #13131f;
+    border:        1px solid #2a2a3e;
+    border-radius: 10px;
+    padding:       1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    width:         100%;
+    box-sizing:    border-box;
+    justify-content: center;
+}
+
+.clc-detail {
+    display:     flex;
+    align-items: center;
+    gap:         10px;
+}
+.clc-detail > i { font-size: 1.1rem; color: #7F77DD; }
+
+.clc-detail-info { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+.clc-detail-label { font-size: 0.7rem; color: #4b5563; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.clc-detail-val   { font-size: 0.875rem; color: #e5e7eb; font-weight: 600; }
+
+/* ── Manage CTA ── */
+.clc-btn-manage {
+    display:       flex;
+    align-items:   center;
+    gap:           8px;
+    height:        42px;
+    padding:       0 24px;
+    background:    #7F77DD;
+    border:        none;
+    border-radius: 10px;
+    color:         #fff;
+    font-size:     0.9rem;
+    font-weight:   600;
+    cursor:        pointer;
+    transition:    background 0.2s;
+}
+.clc-btn-manage:hover { background: #534AB7; }
+
+/* ── Side panel ── */
+.clc-side-card {
+    background:    #1e1e2e;
+    border:        1px solid #2a2a3e;
+    border-radius: 14px;
+    padding:       1.5rem;
+}
+.clc-side-title {
+    font-size:     0.9rem;
+    font-weight:   700;
+    color:         #f0f0f0;
+    margin-bottom: 1.25rem;
+    display:       flex;
+    align-items:   center;
+    gap:           8px;
+}
+.clc-side-title i { color: #7F77DD; }
+
+.clc-next-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.1rem; }
+
+.clc-next-step {
+    display:     flex;
+    align-items: flex-start;
+    gap:         0.85rem;
+}
+.clc-next-icon {
+    width:           32px;
+    height:          32px;
+    border-radius:   8px;
+    background:      rgba(127,119,221,0.1);
+    border:          1px solid rgba(127,119,221,0.2);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    flex-shrink:     0;
+}
+.clc-next-icon i { font-size: 0.9rem; color: #7F77DD; }
+.clc-next-head   { font-size: 0.82rem; font-weight: 600; color: #e5e7eb; margin-bottom: 2px; }
+.clc-next-desc   { font-size: 0.76rem; color: #6b7280; line-height: 1.5; }
+.clc-next-desc strong { color: #7F77DD; }
+
+@media (max-width: 768px) {
+    .clc-wrap    { grid-template-columns: 1fr; }
+    .clc-details { flex-direction: column; align-items: flex-start; gap: 0.85rem; }
+}

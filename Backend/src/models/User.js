@@ -37,22 +37,34 @@ const userSchema = new mongoose.Schema({
         type:    Boolean,
         default: true,
     },
-    // Student → links to their teacher
+
+    // ── Student-only ─────────────────────────────────────────────
     teacher: {
         type:    mongoose.Schema.Types.ObjectId,
         ref:     'User',
         default: null,
     },
-    // Teacher → unique class code students use to self-enroll
+    enrolledAt: {
+        type:    Date,
+        default: null,
+    },
+
+    // ── Teacher-only ─────────────────────────────────────────────
     classCode: {
         type:      String,
         default:   null,
         uppercase: true,
-        sparse:    true,  // allows multiple nulls in unique index
+        sparse:    true,
         unique:    true,
     },
+    students: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:  'User',
+    }],
+
 }, { timestamps: true });
 
+// ── Hooks & methods (unchanged) ───────────────────────────────────
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     const salt    = await bcrypt.genSalt(10);

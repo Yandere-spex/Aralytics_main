@@ -31,6 +31,4 @@ const quizAttemptSchema = new mongoose.Schema({
     timeTaken: { type: Number,  default: null },  // seconds
     answeredAt:{ type: Date,    default: Date.now },
 }, { timestamps: true });
-// ✅ Use the correct schema name for this file
 module.exports = mongoose.models.QuizAttempt || mongoose.model('QuizAttempt', quizAttemptSchema);
-//                                                                             ↑ this file's schema

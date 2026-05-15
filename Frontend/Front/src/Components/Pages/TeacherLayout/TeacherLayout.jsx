@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import LogoutModal from '../../Logout/LogoutModal';
 import './TeacherLayout.css';
 
 export default function TeacherLayout() {
-    const { user, logout }           = useAuth();
-    const navigate                   = useNavigate();
+    const { user, logout }            = useAuth();
+    const navigate                    = useNavigate();
+    const location                    = useLocation();
     const [showLogout, setShowLogout] = useState(false);
     const [sidebarOpen, setSidebar]   = useState(true);
 
     const fullName = user ? `${user.firstName} ${user.lastName}` : 'Teacher';
+
+    const isActive = (path) => location.pathname === path;
 
     return (
         <div className={`teacher-shell ${sidebarOpen ? '' : 'collapsed'}`}>
@@ -23,16 +26,21 @@ export default function TeacherLayout() {
                 </div>
 
                 <nav className="sidebar-nav">
-                    <button className="nav-item active" onClick={() => navigate('/teacher')}>
+                    <button
+                        className={`nav-item ${isActive('/teacher') ? 'active' : ''}`}
+                        onClick={() => navigate('/teacher')}
+                    >
                         <i className="fa-solid fa-chart-line"></i>
                         {sidebarOpen && <span>Dashboard</span>}
                     </button>
 
-                    <button className="nav-item" onClick={() => navigate('/teacher/students')}>
-                        <i className="fa-solid fa-users"></i>
-                        {sidebarOpen && <span>Students</span>}
+                    <button
+                        className={`nav-item ${isActive('/teacher/classes') ? 'active' : ''}`}
+                        onClick={() => navigate('/teacher/classes')}
+                    >
+                        <i className="fa-solid fa-graduation-cap"></i>
+                        {sidebarOpen && <span>Classes</span>}
                     </button>
-                
                 </nav>
 
                 <div className="sidebar-footer">
@@ -58,12 +66,11 @@ export default function TeacherLayout() {
                 </button>
             </aside>
 
-            {/* Main content area */}
+            {/* Main content — TeacherDashboard or ClassesPage renders here */}
             <main className="teacher-main">
                 <Outlet />
             </main>
 
-            {/* Reuse your existing LogoutModal */}
             <LogoutModal
                 isOpen={showLogout}
                 onConfirm={logout}

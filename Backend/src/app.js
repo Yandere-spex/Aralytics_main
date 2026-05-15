@@ -63,6 +63,8 @@ app.use('/api/dashboard',       require('./routes/Dashboardroutes.js'));
 app.use('/api/teacher', require('./routes/teacher'));
 app.use('/api/questions', require('./routes/questionRoutes'));
 app.use('/api/quiz',      require('./routes/quizRoutes'));
+// In app.js / server.js
+app.use('/api/enrollment', require('./routes/enrollmentRoutes'));
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });

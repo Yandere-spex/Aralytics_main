@@ -1,0 +1,140 @@
+.cc-wrap {
+    display:               grid;
+    grid-template-columns: 1fr 340px;
+    gap:                   1.5rem;
+    padding:               1.5rem;
+    align-items:           start;
+}
+
+/* ── Header ── */
+.cc-header    { margin-bottom: 1.5rem; }
+.cc-title     { font-size: 1.4rem; font-weight: 700; color: #f0f0f0; margin: 0 0 0.25rem; }
+.cc-sub       { font-size: 0.875rem; color: #6b7280; margin: 0; }
+
+/* ── Form panel ── */
+.cc-main {
+    background:    #1e1e2e;
+    border:        1px solid #2a2a3e;
+    border-radius: 14px;
+    padding:       1.75rem;
+}
+
+.cc-form { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.cc-field  { display: flex; flex-direction: column; gap: 0.4rem; }
+.cc-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.cc-label {
+    font-size:   0.8rem;
+    font-weight: 600;
+    color:       #9ca3af;
+    letter-spacing: 0.02em;
+}
+.cc-optional { font-weight: 400; color: #4b5563; }
+
+.cc-input,
+.cc-select,
+.cc-textarea {
+    background:    #13131f;
+    border:        1px solid #2a2a3e;
+    border-radius: 8px;
+    padding:       0 14px;
+    height:        40px;
+    font-size:     0.875rem;
+    color:         #f0f0f0;
+    outline:       none;
+    transition:    border-color 0.2s;
+    width:         100%;
+    box-sizing:    border-box;
+}
+.cc-input:focus,
+.cc-select:focus,
+.cc-textarea:focus { border-color: #7F77DD; }
+
+.cc-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+.cc-textarea { height: auto; padding: 10px 14px; resize: vertical; font-family: inherit; line-height: 1.6; }
+
+/* ── Error ── */
+.cc-error { font-size: 0.8rem; color: #ff6b6b; display: flex; align-items: center; gap: 6px; margin: 0; }
+
+/* ── Actions ── */
+.cc-actions { display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 0.5rem; }
+
+.cc-btn-ghost {
+    height:        40px;
+    padding:       0 20px;
+    background:    transparent;
+    border:        1px solid #2a2a3e;
+    border-radius: 8px;
+    color:         #6b7280;
+    font-size:     0.875rem;
+    cursor:        pointer;
+    transition:    all 0.2s;
+}
+.cc-btn-ghost:hover { background: #2a2a3e; color: #ccc; }
+
+.cc-btn-primary {
+    height:        40px;
+    padding:       0 22px;
+    background:    #7F77DD;
+    border:        none;
+    border-radius: 8px;
+    color:         #fff;
+    font-size:     0.875rem;
+    font-weight:   600;
+    cursor:        pointer;
+    display:       flex;
+    align-items:   center;
+    gap:           7px;
+    transition:    background 0.2s;
+}
+.cc-btn-primary:hover    { background: #534AB7; }
+.cc-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Side panel ── */
+.cc-side-card {
+    background:    #1e1e2e;
+    border:        1px solid #2a2a3e;
+    border-radius: 14px;
+    padding:       1.5rem;
+}
+.cc-side-title {
+    font-size:     0.9rem;
+    font-weight:   700;
+    color:         #f0f0f0;
+    margin-bottom: 1.25rem;
+    display:       flex;
+    align-items:   center;
+    gap:           8px;
+}
+.cc-side-title i { color: #7F77DD; }
+
+.cc-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+
+.cc-step {
+    display:     flex;
+    align-items: flex-start;
+    gap:         0.85rem;
+}
+.cc-step-num {
+    width:           26px;
+    height:          26px;
+    border-radius:   50%;
+    background:      #7F77DD;
+    color:           #fff;
+    font-size:       0.75rem;
+    font-weight:     700;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    flex-shrink:     0;
+    margin-top:      1px;
+}
+.cc-step-head { font-size: 0.85rem; font-weight: 600; color: #e5e7eb; margin-bottom: 2px; }
+.cc-step-desc { font-size: 0.78rem; color: #6b7280; line-height: 1.5; }
+
+@media (max-width: 768px) {
+    .cc-wrap { grid-template-columns: 1fr; }
+    .cc-row  { grid-template-columns: 1fr; }
+}
