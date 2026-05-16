@@ -1,254 +1,270 @@
-// src/controllers/teacherController.js
 const User          = require('../models/User');
 const ReadingResult = require('../models/ReadingResult');
-const QuizSession   = require('../models/QuizSession');
-const QuizAttempt   = require('../models/QuizAttempt');
 const asyncHandler  = require('../utils/asyncHandler');
 const ApiError      = require('../utils/ApiError');
+const ApiResponse   = require('../utils/ApiResponse');
 
-// ── MILESTONES definition ─────────────────────────────────────────
-const MILESTONES = [
-    { id: 'first_story',     label: 'First Story Read',       icon: '📖', check: (r, q) => r.length >= 1 },
-    { id: 'stories_5',       label: '5 Stories Read',         icon: '📚', check: (r, q) => r.length >= 5 },
-    { id: 'stories_10',      label: '10 Stories Read',        icon: '🏆', check: (r, q) => r.length >= 10 },
-    { id: 'first_quiz',      label: 'First Quiz Completed',   icon: '🐾', check: (r, q) => q.length >= 1 },
-    { id: 'quiz_5',          label: '5 Quizzes Completed',    icon: '🎯', check: (r, q) => q.length >= 5 },
-    { id: 'perfect_quiz',    label: 'Perfect Quiz Score',     icon: '⭐', check: (r, q) => q.some(s => s.score === 100) },
-    { id: 'speed_reader',    label: 'Speed Reader (>200 WPM)',icon: '⚡', check: (r, q) => r.some(s => s.wpm > 200) },
-    { id: 'comprehension_90',label: '90%+ Comprehension',     icon: '🧠', check: (r, q) => r.some(s => s.percentage >= 90) },
-    { id: 'quiz_streak_3',   label: '3 Quizzes in a Row',     icon: '🔥', check: (r, q) => q.length >= 3 },
-];
+// ── Helpers ───────────────────────────────────────────────────────
 
-// ── Helper: compute milestones for a student ──────────────────────
-const getMilestones = (readingResults, quizSessions) => {
-    return MILESTONES.map(m => ({
-        ...m,
-        achieved: m.check(readingResults, quizSessions),
-    }));
-};
+function buildMilestones(results) {
+    const total   = results.length;
+    const avgComp = total > 0
+        ? results.reduce((a, r) => a + (r.comprehensionResults?.percentage ?? 0), 0) / total
+        : 0;
+    const maxWPM  = total > 0
+        ? Math.max(...results.map(r => r.readingMetrics?.readingSpeed?.wpm ?? 0))
+        : 0;
 
-// ── Helper: estimate learning time (minutes) ──────────────────────
-// Reading: avg 1 min per 150 words. Quiz: use timeTaken if available, else 2 min/session
-const estimateLearningTime = (readingResults, quizSessions) => {
-    const readingMins = readingResults.reduce((sum, r) => {
-        return sum + (r.wordCount ? Math.round(r.wordCount / 150) : 2);
-    }, 0);
-    const quizMins = quizSessions.reduce((sum, q) => {
-        return sum + (q.timeTaken ? Math.round(q.timeTaken / 60) : 2);
-    }, 0);
-    return readingMins + quizMins;
-};
+    return [
+        { id: 1, label: 'First Story',   icon: '📘', achieved: total >= 1    },
+        { id: 2, label: 'Quiz Master',   icon: '🏆', achieved: avgComp >= 80 },
+        { id: 3, label: 'Speed Reader',  icon: '⚡', achieved: maxWPM >= 250 },
+        { id: 4, label: '10 Stories',    icon: '🌟', achieved: total >= 10   },
+        { id: 5, label: 'Perfect Score', icon: '💯', achieved: results.some(r => (r.comprehensionResults?.percentage ?? 0) === 100) },
+    ];
+}
 
-// ── Helper: build per-student summary ────────────────────────────
-const buildStudentSummary = (student, readings, quizzes) => {
-    const avgWPM = readings.length
-        ? Math.round(readings.reduce((a, b) => a + (b.wpm ?? 0), 0) / readings.length)
-        : null;
+function buildStudentRecord(student, results) {
+    const total = results.length;
 
-    const avgComp = readings.length
-        ? Math.round(readings.reduce((a, b) => a + (b.percentage ?? 0), 0) / readings.length)
-        : null;
+    if (total === 0) {
+        return {
+            name:             `${student.firstName} ${student.lastName}`,
+            email:            student.email,
+            avgWPM:           0,
+            avgComprehension: 0,
+            avgQuizScore:     0,
+            totalStories:     0,
+            learningTime:     0,
+            status:           'inactive',
+            achievedCount:    0,
+            bestWPM:          0,
+            bestComp:         0,
+            flags:            ['No activity yet'],
+            speedDist:        { slow: 0, normal: 0, fast: 0 },
+            compDist:         { excellent: 0, good: 0, needsWork: 0 },
+            stories:          [],
+            milestones:       buildMilestones([]),
+        };
+    }
 
-    const avgQuiz = quizzes.length
-        ? Math.round(quizzes.reduce((a, b) => a + (b.score ?? 0), 0) / quizzes.length)
-        : null;
+    // ── Averages — safe access ────────────────────────────────────
+    const wpms = results
+        .filter(r => r.readingMetrics?.readingSpeed?.wpm != null)
+        .map(r => r.readingMetrics.readingSpeed.wpm);
 
-    const fiveDaysAgo    = new Date(Date.now() - 5 * 86_400_000);
-    const recentActivity = readings.filter(r => new Date(r.completedAt) > fiveDaysAgo).length
-                         + quizzes.filter(q => new Date(q.completedAt) > fiveDaysAgo).length;
+    const comps = results
+        .filter(r => r.comprehensionResults?.percentage != null)
+        .map(r => r.comprehensionResults.percentage);
+
+    const avgWPM  = wpms.length
+        ? Math.round(wpms.reduce((a, b) => a + b, 0) / wpms.length)
+        : 0;
+    const avgComp = comps.length
+        ? Math.round(comps.reduce((a, b) => a + b, 0) / comps.length)
+        : 0;
+
+    const learningTime = Math.round(
+        results.reduce((a, r) => a + (r.readingMetrics?.totalTimeSeconds ?? 0), 0) / 60
+    );
+
+    const bestWPM  = wpms.length  ? Math.max(...wpms)  : 0;
+    const bestComp = comps.length ? Math.max(...comps) : 0;
+
+    // ── Distributions — safe access ───────────────────────────────
+    const speedDist = { slow: 0, normal: 0, fast: 0 };
+    const compDist  = { excellent: 0, good: 0, needsWork: 0 };
+
+    results.forEach(r => {
+        const w = r.readingMetrics?.readingSpeed?.wpm;
+        if (w != null) {
+            if      (w < 150)  speedDist.slow++;
+            else if (w <= 250) speedDist.normal++;
+            else               speedDist.fast++;
+        }
+
+        const c = r.comprehensionResults?.percentage;
+        if (c != null) {
+            if      (c >= 80) compDist.excellent++;
+            else if (c >= 60) compDist.good++;
+            else              compDist.needsWork++;
+        }
+    });
+
+    // ── Status & flags — safe access ──────────────────────────────
+    const lastResult      = results[results.length - 1];
+    const daysSinceActive = lastResult?.createdAt
+        ? Math.floor((Date.now() - new Date(lastResult.createdAt)) / (1000 * 60 * 60 * 24))
+        : 999;
 
     const flags = [];
-    if (readings.length > 0 && avgWPM !== null && avgWPM < 80)   flags.push('Low reading speed');
-    if (avgWPM > 250 && avgComp !== null && avgComp < 50)         flags.push('Speed/comprehension gap');
-    if (recentActivity === 0 && (readings.length + quizzes.length) > 0) flags.push('Inactive 5+ days');
-    if (readings.length === 0 && quizzes.length === 0)            flags.push('No activity yet');
+    if (daysSinceActive >= 5) flags.push('Inactive 5+ days');
+    if (avgComp < 60)         flags.push('Low comprehension');
+    if (avgWPM  < 150)        flags.push('Low reading speed');
 
-    const status = flags.length >= 2 ? 'at-risk'
-                 : flags.length === 1 ? 'needs-attention'
-                 : avgWPM !== null    ? 'on-track'
-                 : 'inactive';
+    let status = 'on-track';
+    if (flags.length >= 2 || (flags.includes('Inactive 5+ days') && flags.length >= 1)) {
+        status = 'at-risk';
+    } else if (flags.length === 1) {
+        status = 'needs-attention';
+    }
 
-    const milestones    = getMilestones(readings, quizzes);
-    const learningTime  = estimateLearningTime(readings, quizzes);
+    // ── Recent stories (last 3, newest first) — safe access ──────
+    const stories = results.slice(-3).reverse().map(r => ({
+        title: r.storyTitle ?? 'Unknown',
+        wpm:   r.readingMetrics?.readingSpeed?.wpm ?? 0,
+        comp:  r.comprehensionResults?.percentage  ?? 0,
+        date:  r.createdAt
+            ? new Date(r.createdAt).toLocaleDateString('en-US', {
+                month: 'numeric', day: 'numeric', year: 'numeric',
+              })
+            : '—',
+    }));
+
+    // ── Milestones ────────────────────────────────────────────────
+    const milestones    = buildMilestones(results);
     const achievedCount = milestones.filter(m => m.achieved).length;
 
     return {
-        studentId:        student._id,
         name:             `${student.firstName} ${student.lastName}`,
         email:            student.email,
-        totalStories:     readings.length,
-        totalQuizzes:     quizzes.length,
         avgWPM,
         avgComprehension: avgComp,
-        avgQuizScore:     avgQuiz,
-        learningTime,     // minutes
-        milestones,
-        achievedCount,
+        avgQuizScore:     avgComp,
+        totalStories:     total,
+        learningTime,
         status,
+        achievedCount,
+        bestWPM,
+        bestComp,
         flags,
+        speedDist,
+        compDist,
+        stories,
+        milestones,
     };
-};
+}
 
-// ── GET /api/teacher/dashboard ────────────────────────────────────
-exports.getTeacherDashboard = asyncHandler(async (req, res) => {
-    const teacherId = req.user._id;
+// ── Controller ────────────────────────────────────────────────────
 
-    const students = await User.find(
-        { teacher: teacherId, role: 'student' },
-        'firstName lastName email createdAt'
-    ).lean();
+// @desc   Get teacher dashboard data
+// @route  GET /api/teacher/dashboard
+// @access Private (teacher)
+exports.getDashboard = asyncHandler(async (req, res) => {
 
-    if (students.length === 0) {
-        return res.json({
-            success: true,
-            data: {
-                summary:        { totalStudents: 0, classAvgWPM: 0, classAvgComprehension: 0, classAvgQuizScore: 0, totalLearningTime: 0, speedDistribution: { fast: 0, normal: 0, slow: 0 }, comprehensionDistribution: { excellent: 0, good: 0, needsWork: 0 } },
-                classTrend:     [],
-                attentionFlags: [],
-                students:       [],
-                topPerformers:  { readers: [], quizzers: [], timeLearners: [] },
-                classCode:      req.user.classCode ?? null,
-            },
-        });
+    // 1. Load teacher + enrolled students
+    const teacher = await User
+        .findById(req.user.id)
+        .populate('students', 'firstName lastName email isActive enrolledAt');
+
+    if (!teacher || teacher.role !== 'teacher') {
+        throw new ApiError(403, 'Access denied. Teacher role required.');
     }
 
+    const students   = teacher.students ?? [];
     const studentIds = students.map(s => s._id);
 
-    const [readingResults, quizSessions] = await Promise.all([
-        ReadingResult.find({ userId: { $in: studentIds } }).lean(),
-        QuizSession.find({   userId: { $in: studentIds } }).lean(),
-    ]);
+    // 2. Fetch all reading results for enrolled students
+    const allResults = await ReadingResult
+        .find({ userId: { $in: studentIds } })
+        .sort({ createdAt: 1 })
+        .lean();
 
-    // Group by student
-    const readingMap = {};
-    const quizMap    = {};
-    for (const s of students) {
-        readingMap[s._id.toString()] = [];
-        quizMap[s._id.toString()]    = [];
-    }
-    for (const r of readingResults) {
-        if (readingMap[r.userId.toString()]) readingMap[r.userId.toString()].push(r);
-    }
-    for (const q of quizSessions) {
-        if (quizMap[q.userId.toString()]) quizMap[q.userId.toString()].push(q);
-    }
+    // 3. Group results by student ID
+    const resultsByStudent = {};
+    studentIds.forEach(id => { resultsByStudent[id.toString()] = []; });
+    allResults.forEach(r => {
+        const key = r.userId.toString();
+        if (resultsByStudent[key]) resultsByStudent[key].push(r);
+    });
 
-    // Build summaries
-    const studentSummaries = students.map(s =>
-        buildStudentSummary(s, readingMap[s._id.toString()], quizMap[s._id.toString()])
+    // 4. Build per-student records
+    const studentData = students.map(s =>
+        buildStudentRecord(s, resultsByStudent[s._id.toString()] ?? [])
     );
 
-    // Class-wide stats
-    const active   = studentSummaries.filter(s => s.avgWPM !== null);
-    const quizTook = studentSummaries.filter(s => s.avgQuizScore !== null);
+    // 5. Class-wide summary
+    const totalStudents  = students.length;
+    const activeStudents = studentData.filter(s => s.totalStories > 0);
 
-    const classAvgWPM  = active.length   ? Math.round(active.reduce((a, b) => a + b.avgWPM, 0) / active.length) : 0;
-    const classAvgComp = active.length   ? Math.round(active.reduce((a, b) => a + b.avgComprehension, 0) / active.length) : 0;
-    const classAvgQuiz = quizTook.length ? Math.round(quizTook.reduce((a, b) => a + b.avgQuizScore, 0) / quizTook.length) : 0;
-    const totalLearningTime = studentSummaries.reduce((a, b) => a + b.learningTime, 0);
+    const classAvgWPM = activeStudents.length
+        ? Math.round(activeStudents.reduce((a, s) => a + s.avgWPM, 0) / activeStudents.length)
+        : 0;
+    const classAvgComp = activeStudents.length
+        ? Math.round(activeStudents.reduce((a, s) => a + s.avgComprehension, 0) / activeStudents.length)
+        : 0;
+    const totalLearningTime = studentData.reduce((a, s) => a + s.learningTime, 0);
 
-    const speedDist = {
-        fast:   active.filter(s => s.avgWPM > 250).length,
-        normal: active.filter(s => s.avgWPM >= 150 && s.avgWPM <= 250).length,
-        slow:   active.filter(s => s.avgWPM < 150).length,
+    const speedDistribution         = { fast: 0, normal: 0, slow: 0 };
+    const comprehensionDistribution = { excellent: 0, good: 0, needsWork: 0 };
+
+    studentData.forEach(s => {
+        if      (s.avgWPM > 250)  speedDistribution.fast++;
+        else if (s.avgWPM >= 150) speedDistribution.normal++;
+        else                      speedDistribution.slow++;
+
+        if      (s.avgComprehension >= 80) comprehensionDistribution.excellent++;
+        else if (s.avgComprehension >= 60) comprehensionDistribution.good++;
+        else                               comprehensionDistribution.needsWork++;
+    });
+
+    // 6. Class WPM trend — safe access ────────────────────────────
+    const trendMap = {};
+    allResults.slice(-30).forEach(r => {
+        const wpm = r.readingMetrics?.readingSpeed?.wpm;
+        if (wpm == null) return; // skip malformed records
+        const day = new Date(r.createdAt).toISOString().split('T')[0];
+        if (!trendMap[day]) trendMap[day] = [];
+        trendMap[day].push(wpm);
+    });
+
+    const classTrend = Object.entries(trendMap)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .slice(-5)
+        .map(([, wpms], i) => ({
+            session: i + 1,
+            wpm:     Math.round(wpms.reduce((a, b) => a + b, 0) / wpms.length),
+        }));
+
+    // 7. Attention flags
+    const attentionFlags = studentData
+        .filter(s => s.status !== 'on-track' && s.flags.length > 0)
+        .sort((a, b) => (b.status === 'at-risk' ? 1 : -1))
+        .map(s => ({ name: s.name, status: s.status, flags: s.flags }));
+
+    // 8. Leaderboard
+    const ranked = [...studentData].filter(s => s.totalStories > 0);
+    const topPerformers = {
+        readers: [...ranked]
+            .sort((a, b) => b.totalStories - a.totalStories)
+            .slice(0, 3)
+            .map(s => ({ name: s.name, totalStories: s.totalStories })),
+        quizzers: [...ranked]
+            .sort((a, b) => b.avgQuizScore - a.avgQuizScore)
+            .slice(0, 3)
+            .map(s => ({ name: s.name, avgQuizScore: s.avgQuizScore })),
+        timeLearners: [...ranked]
+            .sort((a, b) => b.learningTime - a.learningTime)
+            .slice(0, 3)
+            .map(s => ({ name: s.name, learningTime: s.learningTime })),
     };
-    const compDist = {
-        excellent: active.filter(s => s.avgComprehension >= 80).length,
-        good:      active.filter(s => s.avgComprehension >= 60 && s.avgComprehension < 80).length,
-        needsWork: active.filter(s => s.avgComprehension < 60).length,
-    };
 
-    // Class trend — last 8 reading results across all students
-    const classTrend = [...readingResults]
-        .sort((a, b) => new Date(a.completedAt) - new Date(b.completedAt))
-        .slice(-8)
-        .map((r, i) => ({ session: i + 1, wpm: r.wpm, comprehension: r.percentage }));
-
-    const attentionFlags = studentSummaries
-        .filter(s => s.flags.length > 0)
-        .sort((a, b) => b.flags.length - a.flags.length)
-        .slice(0, 5)
-        .map(({ name, flags, status }) => ({ name, flags, status }));
-
-    const topReaders     = [...studentSummaries].sort((a, b) => b.totalStories - a.totalStories).slice(0, 3);
-    const topQuizzers    = [...quizTook].sort((a, b) => b.avgQuizScore - a.avgQuizScore).slice(0, 3);
-    const topTimeLearners = [...studentSummaries].sort((a, b) => b.learningTime - a.learningTime).slice(0, 3);
-
-    res.json({
-        success: true,
-        data: {
+    return res.status(200).json(
+        new ApiResponse(200, {
             summary: {
-                totalStudents:             students.length,
+                totalStudents,
                 classAvgWPM,
-                classAvgComprehension:     classAvgComp,
-                classAvgQuizScore:         classAvgQuiz,
+                classAvgComprehension: classAvgComp,
+                classAvgQuizScore:     classAvgComp,
                 totalLearningTime,
-                speedDistribution:         speedDist,
-                comprehensionDistribution: compDist,
+                speedDistribution,
+                comprehensionDistribution,
             },
             classTrend,
             attentionFlags,
-            students: studentSummaries,
-            topPerformers: {
-                readers:      topReaders,
-                quizzers:     topQuizzers,
-                timeLearners: topTimeLearners,
-            },
-            classCode: req.user.classCode ?? null,
-        },
-    });
+            students:     studentData,
+            topPerformers,
+            classCode:    teacher.classCode,
+        }, 'Dashboard loaded successfully')
+    );
 });
-
-// ── POST /api/teacher/enroll/:studentId ───────────────────────────
-exports.enrollStudent = asyncHandler(async (req, res) => {
-    const student = await User.findById(req.params.studentId);
-
-    if (!student)
-        throw new ApiError(404, 'Student not found');
-    if (student.role !== 'student')
-        throw new ApiError(400, 'User is not a student');
-    if (student.teacher?.toString() === req.user._id.toString())
-        throw new ApiError(400, 'Student already enrolled');
-
-    student.teacher = req.user._id;
-    await student.save();
-
-    res.json({ success: true, message: `${student.firstName} enrolled successfully` });
-});
-
-// ── POST /api/teacher/enroll-by-code ─────────────────────────────
-// Student calls this with their teacher's class code to self-enroll
-exports.enrollByCode = asyncHandler(async (req, res) => {
-    const { classCode } = req.body;
-    if (!classCode) throw new ApiError(400, 'classCode is required');
-
-    const teacher = await User.findOne({ classCode: classCode.toUpperCase(), role: 'teacher' });
-    if (!teacher) throw new ApiError(404, 'Invalid class code');
-
-    const student = await User.findById(req.user._id);
-    if (student.teacher?.toString() === teacher._id.toString())
-        throw new ApiError(400, 'Already enrolled in this class');
-
-    student.teacher = teacher._id;
-    await student.save();
-
-    res.json({ success: true, message: `Enrolled in ${teacher.firstName}'s class!` });
-});
-
-// ── GET /api/teacher/class-code ───────────────────────────────────
-// Returns teacher's class code (auto-generates one if missing)
-exports.getClassCode = asyncHandler(async (req, res) => {
-    const teacher = await User.findById(req.user._id);
-
-    if (!teacher.classCode) {
-        teacher.classCode = generateCode();
-        await teacher.save();
-    }
-
-    res.json({ success: true, classCode: teacher.classCode });
-});
-
-// ── Helper: generate a random 6-char class code ───────────────────
-function generateCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-}

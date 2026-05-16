@@ -51,11 +51,9 @@ const userSchema = new mongoose.Schema({
 
     // ── Teacher-only ─────────────────────────────────────────────
     classCode: {
-        type:      String,
-        default:   null,
-        uppercase: true,
-        sparse:    true,
-        unique:    true,
+        type:   String,
+        sparse: true,
+        unique: true,
     },
     students: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -64,11 +62,12 @@ const userSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-// ── Hooks & methods (unchanged) ───────────────────────────────────
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+// ── Hooks & methods ───────────────────────────────────────────────
+userSchema.pre('save', async function () {       // ← no next parameter
+    if (!this.isModified('password')) return;    // ← no next() call
     const salt    = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+                                                 // ← no next() at end
 });
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
